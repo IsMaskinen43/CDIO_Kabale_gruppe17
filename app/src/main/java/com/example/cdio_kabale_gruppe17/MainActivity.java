@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         Imgproc.cvtColor(billedeMat,grayScale,Imgproc.COLOR_RGB2GRAY);
         Mat edges = new Mat();
         Imgproc.Canny(grayScale,edges ,100,300);
+        /*
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
         Imgproc.findContours(edges,contours,hierarchy,Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
@@ -88,17 +89,19 @@ public class MainActivity extends AppCompatActivity {
                     drawText(billedeMat, rect.tl(), "Polygon");
                 }
             } else {
-                drawText(billedeMat,rect.tl(),"Andet");
+                drawText(billedeMat,rect.tl(),total+"");
             }
         }
         kortBillede.setImageBitmap(matToBitmap(billedeMat));
+         */
+        kortBillede.setImageBitmap(matToBitmap(edges));
     }
 
 
     private Bitmap matToBitmap(Mat image) {
         Bitmap bmp = null;
         Mat rgb = new Mat();
-        Imgproc.cvtColor(image, rgb, Imgproc.COLOR_RGBA2RGB);
+        Imgproc.cvtColor(image, rgb, Imgproc.COLOR_GRAY2RGBA);
         try {
             bmp = Bitmap.createBitmap(rgb.cols(), rgb.rows(), Bitmap.Config.ARGB_8888);
             Utils.matToBitmap(rgb, bmp);
