@@ -12,6 +12,7 @@ import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
@@ -19,26 +20,33 @@ import java.util.Collections;
 import java.util.List;
 
 public class CardDetector {
-    public static int height = 0;
-    public static int width = 0;
+    public static List<Integer> height = new ArrayList<>();
+    public static List<Integer> width = new ArrayList<>();
+    public static List<int[]> pixels = new ArrayList<>();
 
-    public static int[] getCard(Bitmap bitmap){
+    public static void getCard(Bitmap bitmap){
 
         Mat billedeMat = new Mat();
         Utils.bitmapToMat(bitmap, billedeMat);
+
+        // make gray scale of picture
         Mat grayScale = new Mat();
-        Imgproc.cvtColor(billedeMat,grayScale,Imgproc.COLOR_RGB2GRAY);
+        Imgproc.cvtColor(billedeMat,grayScale,Imgproc.COLOR_RGB2BGR);
+        Imgproc.cvtColor(grayScale,grayScale,Imgproc.COLOR_RGB2GRAY);
+
+        Imgproc.GaussianBlur(grayScale, grayScale, new Size(13, 13), 0);
+
+        // make canny edge
         Mat edges = new Mat();
         Imgproc.Canny(grayScale,edges ,100,300);
+
+        // find contours in edge image
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
         Imgproc.findContours(edges,contours,hierarchy,Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
-
         MatOfPoint2f matOfPoint2f = new MatOfPoint2f();
         MatOfPoint2f approxCurve = new MatOfPoint2f();
-
-        int[] pixels = null;
 
         for (int idx = 0; idx >= 0; idx = (int) hierarchy.get(0, idx)[0]) {
             MatOfPoint contour = contours.get(idx);
@@ -62,15 +70,12 @@ public class CardDetector {
                 if (isRect) {
                     double ratio = Math.abs(1 - (double) rect.width / rect.height);
                     //drawText(billedeMat,rect.tl(), ratio <= 0.02 ? "SQU" : "RECT");
-                    pixels = getBitmapPixels(matToBitmap(billedeMat), rect.x, rect.y, rect.width, rect.height);
-                    height = rect.height;
-                    width = rect.width;
+                    pixels.add(getBitmapPixels(matToBitmap(billedeMat), rect.x, rect.y, rect.width, rect.height));
+                    height.add(rect.height);
+                    width.add(rect.width);
                 }
             }
         }
-
-
-        return pixels;
     }
 
 
@@ -93,11 +98,6 @@ public class CardDetector {
         double dx2 = pt2.x - pt0.x;
         double dy2 = pt2.y - pt0.y;
         return (dx1*dx2 + dy1*dy2)/Math.sqrt((dx1*dx1 + dy1*dy1)*(dx2*dx2 + dy2*dy2) + 1e-10);
-    }
-
-    private static void drawText(Mat colorImage, Point ofs, String text) {
-        if (text.equals("Andet"))  Imgproc.putText(colorImage, text, ofs, Core.FONT_HERSHEY_SIMPLEX, 4, new Scalar(255,255,0));
-        else Imgproc.putText(colorImage, text, ofs, Core.FONT_HERSHEY_SIMPLEX, 5, new Scalar(255,0,0));
     }
 
     private static int[] getBitmapPixels(Bitmap bitmap, int x, int y, int width, int height) {
