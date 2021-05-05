@@ -51,11 +51,11 @@ public class CardDetector {
         Imgproc.cvtColor(billedeMat, billedeMat, Imgproc.COLOR_RGBA2GRAY);
 
         // blur image
-        Imgproc.medianBlur(billedeMat, billedeMat, 9);
-        //Imgproc.GaussianBlur(billedeMat, billedeMat, new Size(13,13),0);
+        //Imgproc.medianBlur(billedeMat, billedeMat, 9);
+        Imgproc.GaussianBlur(billedeMat, billedeMat, new Size(7,7),0);
 
         // make canny
-        Imgproc.Canny(billedeMat, billedeMat, 100, 300);
+        Imgproc.Canny(billedeMat, billedeMat, 10, 100);
 
         // dilate picture
         Imgproc.dilate(billedeMat, billedeMat, new Mat(), new Point(-1, -1), 1);
