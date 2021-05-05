@@ -29,10 +29,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         kortBillede = findViewById(R.id.kortBillede);
-        Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.kort);
+        Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.kort2);
+        kortBillede.setImageBitmap(bitmap);
 
-        // get pixels of the card detected
-        CardDetector.getCard(bitmap);
+        CardDetector.getCard(bitmap, 4);
 
         Intent i = new Intent(this, BilledeActivity.class);
         startActivity(i);

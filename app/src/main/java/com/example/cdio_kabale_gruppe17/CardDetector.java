@@ -1,12 +1,15 @@
 package com.example.cdio_kabale_gruppe17;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.util.Log;
 
+import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvException;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfInt;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
@@ -14,6 +17,7 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.osgi.OpenCVNativeLoader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,59 +27,64 @@ public class CardDetector {
     public static List<Integer> height = new ArrayList<>();
     public static List<Integer> width = new ArrayList<>();
     public static List<int[]> pixels = new ArrayList<>();
+    public static Bitmap lastUsedBitmap;
+    public static Bitmap grayScale;
 
-    public static void getCard(Bitmap bitmap){
-
+    public static void getCard(Bitmap bitmap, float resizeRatio){
+        if (bitmap != null) lastUsedBitmap = bitmap;
+        else bitmap = lastUsedBitmap;
+        height.clear();
+        width.clear();
+        pixels.clear();
+        // convert to mat
         Mat billedeMat = new Mat();
+        Mat resizedImage = new Mat();
         Utils.bitmapToMat(bitmap, billedeMat);
+        Utils.bitmapToMat(bitmap, resizedImage);
 
-        // make gray scale of picture
-        Mat grayScale = new Mat();
-        Imgproc.cvtColor(billedeMat,grayScale,Imgproc.COLOR_RGB2BGR);
-        Imgproc.cvtColor(grayScale,grayScale,Imgproc.COLOR_RGB2GRAY);
+        Size downscale = new Size(bitmap.getWidth()/resizeRatio, bitmap.getHeight()/resizeRatio);
+        Imgproc.resize(billedeMat, billedeMat, downscale);
+        Imgproc.resize(resizedImage, resizedImage, downscale);
 
-        Imgproc.GaussianBlur(grayScale, grayScale, new Size(13, 13), 0);
+        // make grayscale
+        Imgproc.cvtColor(billedeMat, billedeMat, Imgproc.COLOR_RGB2RGBA);
+        Imgproc.cvtColor(billedeMat, billedeMat, Imgproc.COLOR_RGBA2GRAY);
 
-        // make canny edge
-        Mat edges = new Mat();
-        Imgproc.Canny(grayScale,edges ,100,300);
+        // blur image
+        Imgproc.medianBlur(billedeMat, billedeMat, 9);
+        //Imgproc.GaussianBlur(billedeMat, billedeMat, new Size(13,13),0);
 
-        // find contours in edge image
+        // make canny
+        Imgproc.Canny(billedeMat, billedeMat, 100, 300);
+
+        // dilate picture
+        Imgproc.dilate(billedeMat, billedeMat, new Mat(), new Point(-1, -1), 1);
+
+        // find the contours of the picture
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
-        Imgproc.findContours(edges,contours,hierarchy,Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(billedeMat, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        // make a blank mat
+        Mat drawing = Mat.zeros(billedeMat.size(),billedeMat.type());
 
         MatOfPoint2f matOfPoint2f = new MatOfPoint2f();
         MatOfPoint2f approxCurve = new MatOfPoint2f();
-
-        for (int idx = 0; idx >= 0; idx = (int) hierarchy.get(0, idx)[0]) {
-            MatOfPoint contour = contours.get(idx);
+        for (int i = 0; i < contours.size(); i++){
+            MatOfPoint contour = contours.get(i);
             Rect rect = Imgproc.boundingRect(contour);
-            double contourArea = Imgproc.contourArea(contour);
-            System.out.println("CONTOUR AREA FOR " + idx + " IS " + contourArea);
             matOfPoint2f.fromList(contour.toList());
             Imgproc.approxPolyDP(matOfPoint2f, approxCurve, Imgproc.arcLength(matOfPoint2f, true) * 0.02, true);
             long total = approxCurve.total();
-            System.out.println("TOTAL IS " + total);
-            if (total == 4) {
-                List<Double> cos = new ArrayList<>();
-                Point[] points = approxCurve.toArray();
-                for (int j = 2; j < total + 1; j++) {
-                    cos.add(angle(points[(int) (j % total)], points[j - 2], points[j - 1]));
-                }
-                Collections.sort(cos);
-                Double minCos = cos.get(0);
-                Double maxCos = cos.get(cos.size() - 1);
-                boolean isRect = minCos >= -0.1 && maxCos <= 0.3;
-                if (isRect) {
-                    double ratio = Math.abs(1 - (double) rect.width / rect.height);
-                    //drawText(billedeMat,rect.tl(), ratio <= 0.02 ? "SQU" : "RECT");
-                    pixels.add(getBitmapPixels(matToBitmap(billedeMat), rect.x, rect.y, rect.width, rect.height));
-                    height.add(rect.height);
-                    width.add(rect.width);
-                }
+            if (total == 4){
+                // draw the contour onto the drawing
+                Imgproc.drawContours(drawing, contours, i , new Scalar(255,255,255), -1);
+                pixels.add(getBitmapPixels(matToBitmap(resizedImage), rect.x, rect.y, rect.width, rect.height));
+                width.add(rect.width);
+                height.add(rect.height);
             }
         }
+        grayScale = matToBitmapGray(drawing);
     }
 
 
@@ -83,6 +92,19 @@ public class CardDetector {
         Bitmap bmp = null;
         Mat rgb = new Mat();
         Imgproc.cvtColor(image, rgb, Imgproc.COLOR_RGB2RGBA);
+        try {
+            bmp = Bitmap.createBitmap(rgb.cols(), rgb.rows(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(rgb, bmp);
+        } catch (CvException e) {
+            Log.d("Exception", e.getMessage());
+        }
+        return bmp;
+    }
+
+    private static Bitmap matToBitmapGray(Mat image){
+        Bitmap bmp = null;
+        Mat rgb = new Mat();
+        Imgproc.cvtColor(image, rgb, Imgproc.COLOR_GRAY2RGBA);
         try {
             bmp = Bitmap.createBitmap(rgb.cols(), rgb.rows(), Bitmap.Config.ARGB_8888);
             Utils.matToBitmap(rgb, bmp);
