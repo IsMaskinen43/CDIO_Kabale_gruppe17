@@ -68,15 +68,15 @@ public class CardDetector {
 
         MatOfPoint2f matOfPoint2f = new MatOfPoint2f();
         MatOfPoint2f approxCurve = new MatOfPoint2f();
-        for (int i = 0; i < contours.size(); i++){
+        for (int i = 0; i < contours.size(); i++) {
             MatOfPoint contour = contours.get(i);
             Rect rect = Imgproc.boundingRect(contour);
             matOfPoint2f.fromList(contour.toList());
             Imgproc.approxPolyDP(matOfPoint2f, approxCurve, Imgproc.arcLength(matOfPoint2f, true) * 0.02, true);
             long total = approxCurve.total();
-            if (total == 4){
+            if (total == 4) {
                 // draw the contour onto the drawing
-                Imgproc.drawContours(drawing, contours, i , new Scalar(255,255,255), -1);
+                Imgproc.drawContours(drawing, contours, i, new Scalar(255, 255, 255), -1);
                 pixels.add(getBitmapPixels(matToBitmap(resizedImage), rect.x, rect.y, rect.width, rect.height));
                 width.add(rect.width);
                 height.add(rect.height);
@@ -84,9 +84,9 @@ public class CardDetector {
                 yCoords.add(rect.y);
             }
         }
-        for (int i = 0; i < xCoords.size(); i++) {
+        /*for (int i = 0; i < xCoords.size(); i++) {
             drawLine(drawing, new Point(xCoords.get(i), yCoords.get(i)), new Point(xCoords.get(i)+300, yCoords.get(i)+300));
-        }
+        }*/
         grayScale = matToBitmapGray(drawing);
     }
 
@@ -115,14 +115,6 @@ public class CardDetector {
             Log.d("Exception", e.getMessage());
         }
         return bmp;
-    }
-
-    private static double angle(Point pt1, Point pt2, Point pt0) {
-        double dx1 = pt1.x - pt0.x;
-        double dy1 = pt1.y - pt0.y;
-        double dx2 = pt2.x - pt0.x;
-        double dy2 = pt2.y - pt0.y;
-        return (dx1*dx2 + dy1*dy2)/Math.sqrt((dx1*dx1 + dy1*dy1)*(dx2*dx2 + dy2*dy2) + 1e-10);
     }
 
     private static int[] getBitmapPixels(Bitmap bitmap, int x, int y, int width, int height) {

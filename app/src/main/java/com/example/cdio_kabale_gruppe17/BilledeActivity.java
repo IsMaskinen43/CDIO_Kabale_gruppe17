@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -19,6 +20,7 @@ public class BilledeActivity extends AppCompatActivity {
     private TextView seekbarText;
     private SeekBar seekbarBar;
     private Context ctx;
+    private Board currBoard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,7 @@ public class BilledeActivity extends AppCompatActivity {
         setContentView(R.layout.billeder);
 
         ctx = this;
+        currBoard = Board.getInstance();
 
         layout = findViewById(R.id.linearLayoutBillede);
         seekbarBar = findViewById(R.id.resizerBar);
@@ -59,6 +62,7 @@ public class BilledeActivity extends AppCompatActivity {
 
     public void setViews(){
         List<Bitmap> bitmapList = new ArrayList<>();
+        bitmapList.add(CardDetector.grayScale);
         for (int i = 0; i < CardDetector.pixels.size(); i++) {
             // Create bitmap from the pixels of the card
             Bitmap nytbitmap = Bitmap.createBitmap(CardDetector.width.get(i), CardDetector.height.get(i), Bitmap.Config.ARGB_8888);
@@ -69,7 +73,6 @@ public class BilledeActivity extends AppCompatActivity {
             // override the old image with the new
             bitmapList.add(nytbitmap);
         }
-        bitmapList.add(CardDetector.grayScale);
 
         layout.removeAllViews();
         BilledeAdapter adapter = new BilledeAdapter(ctx, bitmapList);
@@ -77,8 +80,17 @@ public class BilledeActivity extends AppCompatActivity {
             View v = adapter.getView(i, null, null);
             layout.addView(v);
         }
-        Board.getInstance().instantiate();
-        Board.getInstance().printBoard();
+
+        currBoard.instantiate();
+        currBoard.printBoard();
+
+        // print all moves
+        List<Pair<Card,List<Pair<Integer,Integer>>>> moves = currBoard.getAllMoves();
+        for (Pair<Card,List<Pair<Integer,Integer>>> l: moves) {
+            for (int i = 0; i < l.second.size(); i++) {
+                System.out.println("Possible move for " + l.first.toString() +" is in column " + l.second.get(i).first + " and row " + l.second.get(i).second);
+            }
+        }
     }
 
 }

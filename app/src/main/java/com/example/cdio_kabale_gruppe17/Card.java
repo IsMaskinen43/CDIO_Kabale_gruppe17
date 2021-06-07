@@ -59,6 +59,13 @@ public class Card {
         this.xCoord = xCoord;
     }
 
+    // constructor for no x,y coords
+    public Card(cardColor color, cardNumber number){
+        this.ownColor = color;
+        this.ownNumber = number;
+
+    }
+
     public cardColor getOwnColor() {
         return ownColor;
     }
@@ -89,5 +96,15 @@ public class Card {
 
     public void setxCoord(int xCoord) {
         this.xCoord = xCoord;
+    }
+
+    @Override
+    public String toString() {
+        return "Card{" +
+                "ownColor=" + ownColor +
+                ", ownNumber=" + ownNumber +
+                ", yCoord=" + yCoord +
+                ", xCoord=" + xCoord +
+                '}';
     }
 }
