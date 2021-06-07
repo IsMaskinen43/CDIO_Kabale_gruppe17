@@ -47,24 +47,23 @@ public class Board {
         }
 
         // get the estimated distance between each column
-        int dx = (maxX - minX) / 7;
+        float dx = (maxX - minX) / 7.0f;
         System.out.println("DX ER " + dx);
 
         // make a list with the estimated position of the cards in the columns (this will be used together with a margin to estimate better which cards are in the same column)
         List<Float> kolonneList = new ArrayList<>();
         for (int i = 0; i < CardDetector.xCoords.size(); i++) {
-            kolonneList.add((CardDetector.xCoords.get(i)-minX)/(float)dx);
+            kolonneList.add((CardDetector.xCoords.get(i)-minX)/dx);
         }
 
         // set up the board based on the average x coord and margin
         List<Float> averages = new ArrayList<>();
         List<Integer> numberOfAverages = new ArrayList<>();
-        // sort the list based on the given float
-        Collections.sort(kolonneList);
         // calculate how many columns there are on the board
         for (int i = 0; i < kolonneList.size(); i++) {
             boolean isInMargin = false;
             // få kort fra ML af
+            // TODO lav om til machine learning i stedet for predefined
             Card currentCard = new Card(Card.cardColor.BLACK, Card.cardNumber.ACE, CardDetector.yCoords.get(i), CardDetector.xCoords.get(i));
 
             // if there is no other averages in the list add this one
@@ -78,7 +77,8 @@ public class Board {
                 for (int j = 0; j < averages.size(); j++) {
                     // if it is in the margin add it to that list and calculate average
                     if (averages.get(j)+margin > kolonneList.get(i) && averages.get(j)-margin < kolonneList.get(i)){
-                        averages.set(j, (averages.get(j)+kolonneList.get(i))/(numberOfAverages.get(j)+1));
+                        numberOfAverages.set(j, numberOfAverages.get(j)+1);
+                        averages.set(j, (averages.get(j)+kolonneList.get(i))/(numberOfAverages.get(j)));
                         isInMargin = true;
                         // save the cards in a list if the current card is in the not at the bottom of the column
                         List<Card> tempList = new ArrayList<>();
@@ -140,7 +140,7 @@ public class Board {
             return to.getOwnNumber() == Card.cardNumber.EMPTY;
         }
         // return true if the to card has a number 1 higher than from and is not the same color
-        return (from.getOwnNumber().getNumber() == to.getOwnNumber().getNumber()+1) && (from.getOwnColor() != to.getOwnColor());
+        return (from.getOwnNumber().getNumber()+1 == to.getOwnNumber().getNumber()) && (from.getOwnColor() != to.getOwnColor());
     }
 
     // debugging the board
