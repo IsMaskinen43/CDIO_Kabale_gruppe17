@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -78,6 +77,8 @@ public class BilledeActivity extends AppCompatActivity {
             View v = adapter.getView(i, null, null);
             layout.addView(v);
         }
+        Board.getInstance().instantiate();
+        Board.getInstance().printBoard();
     }
 
 }

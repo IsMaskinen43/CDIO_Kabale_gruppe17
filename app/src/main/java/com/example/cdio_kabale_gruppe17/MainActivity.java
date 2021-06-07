@@ -36,11 +36,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        PictureMaker.getInstance().picBool(this,this);
-        while(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
+        //PictureMaker.getInstance().picBool(this,this);
+        //while(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
 
-        }
-        PictureMaker.getInstance().uploadPic(this);
+        //}
+        //PictureMaker.getInstance().uploadPic(this);
+
+        kortBillede = findViewById(R.id.kortBillede);
+        Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.kort4);
+        kortBillede.setImageBitmap(bitmap);
+
+        CardDetector.getCard(bitmap, 4);
+
+        Intent i = new Intent(this, BilledeActivity.class);
+        startActivity(i);
 
     }
 
