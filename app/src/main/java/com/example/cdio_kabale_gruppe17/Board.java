@@ -1,7 +1,7 @@
 package com.example.cdio_kabale_gruppe17;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,63 +22,100 @@ public class Board {
     }
 
 
-    // instantier boardet med 7 linkedlists baseret ud fra x og y koordinater fundet i carddetector
+    // instantiate the board with some linked lists based on the columns
     public void instantiate(){
-        // instantier de syv kolonner
+        // set the margin that the distance between cards in same column can be
+        float margin = 0.5f;
+
+        // instantiate the seven columns
         board.clear();
         goalPoints.clear();
         for (int i = 0; i < 7; i++) {
             board.add(new LinkedList<>());
         }
 
-        // instantier de fire goal points
+        // instantiate the four goal points
         for (int i = 0; i < 4; i++) {
             goalPoints.add(new LinkedList<>());
         }
 
-        // find max punkterne i x og y
-        int maxX=Integer.MIN_VALUE, maxY=Integer.MIN_VALUE, minX=Integer.MAX_VALUE, minY=Integer.MAX_VALUE;
+        // find the max and min points in the x axis
+        int maxX=Integer.MIN_VALUE, minX=Integer.MAX_VALUE;
         for (int i = 0; i < CardDetector.xCoords.size(); i++) {
             maxX = Math.max(maxX, CardDetector.xCoords.get(i));
-            maxY = Math.max(maxY, CardDetector.yCoords.get(i));
             minX = Math.min(minX, CardDetector.xCoords.get(i));
-            minY = Math.min(minY, CardDetector.yCoords.get(i));
         }
 
-        // find cirka afstand mellem hver kolonne
+        // get the estimated distance between each column
         int dx = (maxX - minX) / 7;
         System.out.println("DX ER " + dx);
 
-        // iterer over kortene
+        // make a list with the estimated position of the cards in the columns (this will be used together with a margin to estimate better which cards are in the same column)
+        List<Float> kolonneList = new ArrayList<>();
         for (int i = 0; i < CardDetector.xCoords.size(); i++) {
-            int kolonne = Math.min(6,(CardDetector.xCoords.get(i)-minX)/dx);
-            System.out.println("KOLONNE ER " + kolonne);
+            kolonneList.add((CardDetector.xCoords.get(i)-minX)/(float)dx);
+        }
+
+        // set up the board based on the average x coord and margin
+        List<Float> averages = new ArrayList<>();
+        List<Integer> numberOfAverages = new ArrayList<>();
+        // sort the list based on the given float
+        Collections.sort(kolonneList);
+        // calculate how many columns there are on the board
+        for (int i = 0; i < kolonneList.size(); i++) {
+            boolean isInMargin = false;
             // få kort fra ML af
             Card currentCard = new Card(Card.cardColor.BLACK, Card.cardNumber.ACE, CardDetector.yCoords.get(i), CardDetector.xCoords.get(i));
 
-            // gem kort i en liste hvis der skal rykkes på nogle
-            List<Card> tempList = new ArrayList<>();
-            // tjek y koordinaterne og se hvor i kolonnen kortet skal ligge
-            for (int j = board.get(kolonne).size(); j > 0; j--) {
-                if (board.get(kolonne).get(j-1).getyCoord() < currentCard.getyCoord()){
-                    tempList.add(board.get(kolonne).get(j-1));
-                    board.get(kolonne).remove(j-1);
-                }
-                else break;
+            // if there is no other averages in the list add this one
+            if (averages.isEmpty()){
+                averages.add(kolonneList.get(i));
+                numberOfAverages.add(1);
+                board.get(averages.size()-1).addLast(currentCard);
             }
-            board.get(kolonne).addLast(currentCard);
-            for (int j = tempList.size()-1; j > 0; j--) {
-                board.get(kolonne).addLast(tempList.get(j));
+            // else we check if this point is in the margin of the average
+            else{
+                for (int j = 0; j < averages.size(); j++) {
+                    // if it is in the margin add it to that list and calculate average
+                    if (averages.get(j)+margin > kolonneList.get(i) && averages.get(j)-margin < kolonneList.get(i)){
+                        averages.set(j, (averages.get(j)+kolonneList.get(i))/(numberOfAverages.get(j)+1));
+                        isInMargin = true;
+                        // save the cards in a list if the current card is in the not at the bottom of the column
+                        List<Card> tempList = new ArrayList<>();
+                        // check the y coordinate to determine where in the column the card should be placed
+                        for (int k = board.get(j).size(); k > 0; k--) {
+                            // we remove all cards that are beneath the current card
+                            if (board.get(j).get(k-1).getyCoord() < currentCard.getyCoord()){
+                                tempList.add(board.get(j).get(k-1));
+                                board.get(j).remove(k-1);
+                            }
+                            else break;
+                        }
+                        // we add the current card to the column
+                        board.get(j).addLast(currentCard);
+                        // we add the removed cards back
+                        for (int k = tempList.size()-1; k > 0; k--) {
+                            board.get(j).addLast(tempList.get(k));
+                        }
+                        break;
+                    }
+                }
+                if (!isInMargin) {
+                    // if not in average margin we add a new average
+                    averages.add(kolonneList.get(i));
+                    numberOfAverages.add(1);
+                    board.get(averages.size()-1).addLast(currentCard);
+                }
             }
         }
     }
 
-    // ryk kort fra én linked list til en anden (ingen logik indblandet)
+    // move a card from one linked list to another (no logic in function)
     public void moveCard(Card target, LinkedList<Card> originBunke, LinkedList<Card> endBunke){
         List<Card> tempList = new ArrayList<>();
 
-        // først iterer vi fra bunden af bunken indtil at vi finder vores target kort
-        // samtidig gemmer vi alle kortene i en liste så vi kan indsætte dem i end listen
+        // first iterate from the bottom of the column until we find the target card
+        // meanwhile we save all cards that are beneath the target so we can move it together with the target
         for (int i = 0; i < originBunke.size(); i++) {
             if (originBunke.getLast() != target){
                 tempList.add(originBunke.getLast());
@@ -91,7 +128,7 @@ public class Board {
             }
         }
 
-        // indsæt templist ind i end
+        // insert templist to end list
         for (int i = tempList.size(); i > 0; i--) {
             endBunke.addLast(tempList.get(i-1));
         }
@@ -106,6 +143,7 @@ public class Board {
         return (from.getOwnNumber().getNumber() == to.getOwnNumber().getNumber()+1) && (from.getOwnColor() != to.getOwnColor());
     }
 
+    // debugging the board
     public void printBoard(){
         if (!board.isEmpty()){
             int number = 0;

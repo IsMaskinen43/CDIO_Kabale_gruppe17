@@ -2,7 +2,7 @@ package com.example.cdio_kabale_gruppe17;
 
 public class Card {
 
-    // Vi laver nogle enums til farven og nummeret på kortet for lettere at kunne instantiere bordet på og også kunne iterere lettere samt opsætning af logik kan blive lettere
+    // we create some enums for the color and number of the cards to easier instantiate the board, iterate and make logic based moves
     public enum cardColor{
         RED(0),
         BLACK(1),
@@ -47,7 +47,7 @@ public class Card {
         }
     }
 
-    // lav private variabler til farve og nummer
+    // make private variables for the color, number and position
     private cardColor ownColor;
     private cardNumber ownNumber;
     private int yCoord, xCoord;
