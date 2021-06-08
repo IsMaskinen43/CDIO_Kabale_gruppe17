@@ -5,11 +5,24 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:text="If there are pictures of something else than cards, try changing the resize ratio"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:textSize="20sp"
+        />
+
+    <TextView
         android:id="@+id/resizerText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:text="Downscale size:" />
+        android:text="Downscale size:"
+        android:textColor="@color/black"
+        />
 
     <SeekBar
         android:id="@+id/resizerBar"
@@ -34,5 +47,12 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <Button
+        android:id="@+id/continueButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:text="Continue" />
 
 </LinearLayout>

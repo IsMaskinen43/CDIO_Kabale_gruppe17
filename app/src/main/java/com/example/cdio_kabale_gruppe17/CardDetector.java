@@ -117,6 +117,7 @@ public class CardDetector {
         return bmp;
     }
 
+    // TODO fix out of memory error ved resizeratio 1
     private static int[] getBitmapPixels(Bitmap bitmap, int x, int y, int width, int height) {
         int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
         bitmap.getPixels(pixels, 0, bitmap.getWidth(), x, y,

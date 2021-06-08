@@ -62,7 +62,7 @@ public class Board {
             boolean isInMargin = false;
             // få kort fra ML af
             // TODO lav om til machine learning i stedet for predefined
-            Card currentCard = new Card(Card.cardColor.BLACK, Card.cardNumber.ACE, Card.cardType.SPADE, 0, CardDetector.yCoords.get(i), CardDetector.xCoords.get(i));
+            Card currentCard = new Card(Card.cardColor.BLACK, Card.cardNumber.ACE, Card.cardType.SPADE, 0, i, CardDetector.yCoords.get(i), CardDetector.xCoords.get(i));
 
             // if there is no other averages in the list add this one
             if (averages.isEmpty()){
@@ -113,7 +113,7 @@ public class Board {
         // create empty lists for the rest
         for (int i = averages.size(); i < 7; i++) {
             List<Card> temp = new ArrayList<>();
-            temp.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, i));
+            temp.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, i, i));
             board.set(i, temp);
         }
     }

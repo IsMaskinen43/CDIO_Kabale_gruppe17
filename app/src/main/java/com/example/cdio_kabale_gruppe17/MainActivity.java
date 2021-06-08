@@ -4,11 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -22,6 +24,7 @@ import java.io.InputStream;
 public class MainActivity extends AppCompatActivity {
     private static String TAG = "opencv";
     private ImageView kortBillede;
+    private SharedPreferences prefs;
 
     static {
         if (!OpenCVLoader.initDebug())
@@ -42,11 +45,13 @@ public class MainActivity extends AppCompatActivity {
         //}
         //PictureMaker.getInstance().uploadPic(this);
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         kortBillede = findViewById(R.id.kortBillede);
         Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.kort4);
         kortBillede.setImageBitmap(bitmap);
 
-        CardDetector.getCard(bitmap, 4);
+        CardDetector.getCard(bitmap, Integer.parseInt(prefs.getString("resizeRatio","4")));
 
         Intent i = new Intent(this, BilledeActivity.class);
         startActivity(i);

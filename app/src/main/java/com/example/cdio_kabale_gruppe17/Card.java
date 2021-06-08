@@ -68,23 +68,25 @@ public class Card {
     private cardColor ownColor;
     private cardNumber ownNumber;
     private cardType ownType;
-    private int yCoord, xCoord, column;
+    private int yCoord, xCoord, column, picPos;
 
-    public Card(cardColor color, cardNumber number, cardType type, int column, int yCoord, int xCoord){
+    public Card(cardColor color, cardNumber number, cardType type, int column, int picPos, int yCoord, int xCoord){
         this.ownColor = color;
         this.ownNumber = number;
         this.ownType = type;
         this.column = column;
         this.yCoord = yCoord;
         this.xCoord = xCoord;
+        this.picPos = picPos;
     }
 
     // constructor for no x,y coords
-    public Card(cardColor color, cardNumber number, cardType type, int column){
+    public Card(cardColor color, cardNumber number, cardType type, int column, int picPos){
         this.ownColor = color;
         this.ownNumber = number;
         this.ownType = type;
         this.column = column;
+        this.picPos = picPos;
     }
 
     public cardColor getOwnColor() {
@@ -133,6 +135,14 @@ public class Card {
 
     public void setColumn(int column) {
         this.column = column;
+    }
+
+    public int getPicPos() {
+        return picPos;
+    }
+
+    public void setPicPos(int picPos) {
+        this.picPos = picPos;
     }
 
     @Override

@@ -2,25 +2,33 @@ package com.example.cdio_kabale_gruppe17;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Pair;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BilledeActivity extends AppCompatActivity {
+public class BilledeActivity extends AppCompatActivity implements View.OnClickListener{
     private LinearLayout layout;
     private TextView seekbarText;
     private SeekBar seekbarBar;
     private Context ctx;
     private Board currBoard;
+    private Button continueButton;
+    private List<Bitmap> bitmapList = new ArrayList<>();
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,21 +37,29 @@ public class BilledeActivity extends AppCompatActivity {
 
         ctx = this;
         currBoard = Board.getInstance();
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         layout = findViewById(R.id.linearLayoutBillede);
         seekbarBar = findViewById(R.id.resizerBar);
         seekbarText = findViewById(R.id.resizerText);
+        seekbarBar.setProgress(Integer.parseInt(prefs.getString("resizeRatio","4")));
         seekbarText.setText("Downscale size: " + seekbarBar.getProgress());
+        continueButton = findViewById(R.id.continueButton);
 
         setViews();
+
+        continueButton.setOnClickListener(this);
 
         seekbarBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                seekbarText.setText("Downscale size: " + progress);
-                CardDetector.getCard(null, progress);
-                setViews();
+                if (ctx != null) {
+                    prefs.edit().putString("resizeRatio", progress + "").apply();
+                    seekbarText.setText("Downscale size: " + progress);
+                    CardDetector.getCard(null, progress);
+                    setViews();
+                }
             }
 
             @Override
@@ -61,7 +77,7 @@ public class BilledeActivity extends AppCompatActivity {
     }
 
     public void setViews(){
-        List<Bitmap> bitmapList = new ArrayList<>();
+        bitmapList.clear();
         bitmapList.add(CardDetector.grayScale);
         for (int i = 0; i < CardDetector.pixels.size(); i++) {
             // Create bitmap from the pixels of the card
@@ -91,12 +107,21 @@ public class BilledeActivity extends AppCompatActivity {
             for (int i = 0; i < l.second.size(); i++) {
                 System.out.println("Possible move for " + l.first.toString() +" is in column " + l.second.get(i).first + " and row " + l.second.get(i).second);
             }
-        }*/
+        }
 
         List<Pair<Integer,Pair<Card,Integer>>> bestMoves = Algoritme.getInstance().getBestMoves(currBoard);
         for (Pair<Integer, Pair<Card, Integer>> p: bestMoves) {
             System.out.println("Best move is moving " + p.second.first + " to column " + p.second.second + " with a score of " + p.first);
-        }
+        }*/
     }
 
+
+    @Override
+    public void onClick(View v) {
+        if (v == continueButton) {
+            PictureHelperClass.getInstance().setPictureList(bitmapList);
+            Intent i = new Intent(this, Chooser.class);
+            startActivity(i);
+        }
+    }
 }
