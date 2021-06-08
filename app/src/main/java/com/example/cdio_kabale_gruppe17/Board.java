@@ -62,13 +62,14 @@ public class Board {
             boolean isInMargin = false;
             // få kort fra ML af
             // TODO lav om til machine learning i stedet for predefined
-            Card currentCard = new Card(Card.cardColor.BLACK, Card.cardNumber.ACE, CardDetector.yCoords.get(i), CardDetector.xCoords.get(i));
+            Card currentCard = new Card(Card.cardColor.BLACK, Card.cardNumber.ACE, Card.cardType.SPADE, 0, CardDetector.yCoords.get(i), CardDetector.xCoords.get(i));
 
             // if there is no other averages in the list add this one
             if (averages.isEmpty()){
                 averages.add(columnList.get(i));
                 numberOfAverages.add(1);
                 board.get(averages.size()-1).add(currentCard);
+                currentCard.setColumn(averages.size()-1);
             }
             // else we check if this point is in the margin of the average
             else{
@@ -95,6 +96,7 @@ public class Board {
                         for (int k = tempList.size()-1; k > 0; k--) {
                             board.get(j).add(tempList.get(k));
                         }
+                        currentCard.setColumn(j);
                         break;
                     }
                 }
@@ -103,6 +105,7 @@ public class Board {
                     averages.add(columnList.get(i));
                     numberOfAverages.add(1);
                     board.get(averages.size()-1).add(currentCard);
+                    currentCard.setColumn(averages.size()-1);
                 }
             }
         }
@@ -110,7 +113,7 @@ public class Board {
         // create empty lists for the rest
         for (int i = averages.size(); i < 7; i++) {
             List<Card> temp = new ArrayList<>();
-            temp.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY));
+            temp.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, i));
             board.set(i, temp);
         }
     }
@@ -153,6 +156,7 @@ public class Board {
 
 
     // will find all applicable moves for a card in any other column
+    // TODO implementer point bunkerne og ændr til kun at finde kolonne
     public Pair<Card, List<Pair<Integer, Integer>>> getMovesForCard(Card start, int column){
         List<Pair<Integer, Integer>> moveList = new ArrayList<>();
         // get each column on the board
@@ -201,4 +205,11 @@ public class Board {
         return board;
     }
 
+    public List<List<Card>> getBoard() {
+        return board;
+    }
+
+    public List<List<Card>> getGoalPoints() {
+        return goalPoints;
+    }
 }

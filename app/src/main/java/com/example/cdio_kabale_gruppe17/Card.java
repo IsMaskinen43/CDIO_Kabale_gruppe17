@@ -19,6 +19,22 @@ public class Card {
         }
     }
 
+    public enum cardType{
+        HEART(0),
+        DIAMOND(1),
+        SPADE(2),
+        CLUB(3),
+        EMPTY(4),
+        TURNED(5);
+
+        private int typeNumber;
+
+        public int getTypeNumber(){return this.typeNumber;}
+
+        private cardType(int typeNumber){this.typeNumber = typeNumber;}
+    }
+
+
     public enum cardNumber{
         ACE(0),
         ONE(1),
@@ -34,7 +50,8 @@ public class Card {
         JACK(11),
         QUEEN(12),
         KING(13),
-        EMPTY(14);
+        EMPTY(14),
+        TURNED(15);
 
         private int number;
 
@@ -50,20 +67,24 @@ public class Card {
     // make private variables for the color, number and position
     private cardColor ownColor;
     private cardNumber ownNumber;
-    private int yCoord, xCoord;
+    private cardType ownType;
+    private int yCoord, xCoord, column;
 
-    public Card(cardColor color, cardNumber number, int yCoord, int xCoord){
+    public Card(cardColor color, cardNumber number, cardType type, int column, int yCoord, int xCoord){
         this.ownColor = color;
         this.ownNumber = number;
+        this.ownType = type;
+        this.column = column;
         this.yCoord = yCoord;
         this.xCoord = xCoord;
     }
 
     // constructor for no x,y coords
-    public Card(cardColor color, cardNumber number){
+    public Card(cardColor color, cardNumber number, cardType type, int column){
         this.ownColor = color;
         this.ownNumber = number;
-
+        this.ownType = type;
+        this.column = column;
     }
 
     public cardColor getOwnColor() {
@@ -98,11 +119,28 @@ public class Card {
         this.xCoord = xCoord;
     }
 
+    public cardType getOwnType() {
+        return ownType;
+    }
+
+    public void setOwnType(cardType ownType) {
+        this.ownType = ownType;
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
+    public void setColumn(int column) {
+        this.column = column;
+    }
+
     @Override
     public String toString() {
         return "Card{" +
                 "ownColor=" + ownColor +
                 ", ownNumber=" + ownNumber +
+                ", ownType=" + ownType +
                 ", yCoord=" + yCoord +
                 ", xCoord=" + xCoord +
                 '}';

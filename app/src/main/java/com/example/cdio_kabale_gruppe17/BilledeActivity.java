@@ -84,12 +84,18 @@ public class BilledeActivity extends AppCompatActivity {
         currBoard.instantiate();
         currBoard.printBoard();
 
+        /*
         // print all moves
         List<Pair<Card,List<Pair<Integer,Integer>>>> moves = currBoard.getAllMoves();
         for (Pair<Card,List<Pair<Integer,Integer>>> l: moves) {
             for (int i = 0; i < l.second.size(); i++) {
                 System.out.println("Possible move for " + l.first.toString() +" is in column " + l.second.get(i).first + " and row " + l.second.get(i).second);
             }
+        }*/
+
+        List<Pair<Integer,Pair<Card,Integer>>> bestMoves = Algoritme.getInstance().getBestMoves(currBoard);
+        for (Pair<Integer, Pair<Card, Integer>> p: bestMoves) {
+            System.out.println("Best move is moving " + p.second.first + " to column " + p.second.second + " with a score of " + p.first);
         }
     }
 
