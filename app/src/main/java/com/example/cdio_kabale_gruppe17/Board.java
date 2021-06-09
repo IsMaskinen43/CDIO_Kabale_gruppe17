@@ -8,6 +8,7 @@ public class Board {
     private static Board instance = null;
     private static List<List<Card>> board = new ArrayList<>();
     private static List<List<Card>> goalPoints = new ArrayList<>();
+    private static List<Card> hand = new ArrayList<>();
 
 
     private Board(){
@@ -36,6 +37,11 @@ public class Board {
         // instantiate the four goal points
         for (int i = 0; i < 4; i++) {
             goalPoints.add(new ArrayList<>());
+            goalPoints.get(i).add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, 7+i, 0));
+        }
+
+        for (int i = 0; i < 3; i++) {
+            hand.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, i, 0));
         }
 
         // find the max and min points in the x axis
@@ -113,68 +119,95 @@ public class Board {
         // create empty lists for the rest
         for (int i = averages.size(); i < 7; i++) {
             List<Card> temp = new ArrayList<>();
-            temp.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, i, i));
+            temp.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, i, 0));
             board.set(i, temp);
         }
     }
 
     // move a card from one list to another (no logic in function)
-    public void moveCard(Card target, List<Card> origin, List<Card> end){
-        List<Card> tempList = new ArrayList<>();
-        // first iterate from the bottom of the column until we find the target card
-        // meanwhile we save all cards that are beneath the target so we can move it together with the target
-        for (int i = 0; i < origin.size(); i++) {
-            tempList.add(origin.get(i));
-            origin.remove(origin.get(i));
-            if (tempList.get(tempList.size()-1) == target){
-                break;
+    public void moveCard(Card target, List<Card> origin, List<Card> end) {
+        if (target.getOwnNumber() != Card.cardNumber.HAND) {
+            List<Card> tempList = new ArrayList<>();
+            // first iterate from the bottom of the column until we find the target card
+            // meanwhile we save all cards that are beneath the target so we can move it together with the target
+            for (int i = 0; i < origin.size(); i++) {
+                tempList.add(origin.get(i));
+                origin.remove(origin.get(i));
+                if (tempList.get(tempList.size() - 1) == target) {
+                    break;
+                }
             }
-        }
 
-        if (end.get(end.size()-1).getOwnNumber() == Card.cardNumber.EMPTY){
-            end.remove(end.size()-1);
-        }
-        for (int i = tempList.size(); i > 0; i--) {
-            end.add(tempList.get(i-1));
+            int endCol = end.get(end.size() - 1).getColumn();
+            if (end.get(end.size() - 1).getOwnNumber() == Card.cardNumber.EMPTY) {
+                end.remove(end.size() - 1);
+            }
+            for (int i = tempList.size(); i > 0; i--) {
+                end.add(tempList.get(i - 1));
+            }
+            if (end.isEmpty()) {
+                end.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, endCol, 0));
+            }
+            if (origin.isEmpty()) {
+                origin.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, endCol, 0));
+            }
+
         }
     }
 
     // check if a move for a card is legal
     public Boolean checkMove(Card from, Card to){
         if (from.getOwnNumber() == Card.cardNumber.EMPTY) return false;
-        // if moving to an empty space
-        if (to.getOwnNumber() == Card.cardNumber.EMPTY){
+        // if moving to an empty space but not in end goal
+        if (to.getOwnNumber() == Card.cardNumber.EMPTY && to.getColumn() < 7){
             return true;
         }
         // check if you want to move to empty space with king
-        if (from.getOwnNumber() == Card.cardNumber.KING){
+        if (from.getOwnNumber() == Card.cardNumber.KING && to.getColumn() < 7){
             return to.getOwnNumber() == Card.cardNumber.EMPTY;
         }
+
+        // check if you want to move card to goal point
+        if (to.getColumn() >= 7){
+            // move an ace onto the goal points
+            if (to.getOwnNumber() == Card.cardNumber.EMPTY && from.getOwnNumber() == Card.cardNumber.ACE) return true;
+            // move another card onto the goal points
+            if (to.getOwnNumber().getNumber() == from.getOwnNumber().getNumber()-1 && to.getOwnType() == from.getOwnType()) return true;
+        }
+
         // return true if the to card has a number 1 higher than from and is not the same color
-        return (from.getOwnNumber().getNumber()+1 == to.getOwnNumber().getNumber()) && (from.getOwnColor() != to.getOwnColor());
+        return (from.getOwnNumber().getNumber()+1 == to.getOwnNumber().getNumber()) && (from.getOwnColor() != to.getOwnColor() && to.getColumn() < 7);
     }
 
 
     // will find all applicable moves for a card in any other column
     // TODO implementer point bunkerne og ændr til kun at finde kolonne
-    public Pair<Card, List<Pair<Integer, Integer>>> getMovesForCard(Card start, int column){
-        List<Pair<Integer, Integer>> moveList = new ArrayList<>();
+    public Pair<Card, List<Integer>> getMovesForCard(Card start, int column){
+        List<Integer> moveList = new ArrayList<>();
         // get each column on the board
         for (int i = 0; i < board.size(); i++) {
             // if not own column
             if (i != column) {
                 // check if you can place something on the bottom card
                 if (checkMove(start, board.get(i).get(Math.max(0,board.get(i).size()-1)))){
-                    moveList.add(new Pair<>(i,board.get(i).size()-1));
+                    moveList.add(i);
                 }
             }
         }
+        // check the point goals
+        for (int i = 0; i < goalPoints.size(); i++) {
+            if (checkMove(start, goalPoints.get(i).get(Math.max(0, goalPoints.get(i).size()-1)))){
+                moveList.add(7+i);
+            }
+        }
+
+
         return new Pair<>(start, moveList);
     }
 
     // will find all applicable moves for all cards in all columns
-    public List<Pair<Card,List<Pair<Integer,Integer>>>> getAllMoves(){
-        List<Pair<Card,List<Pair<Integer,Integer>>>> moves = new ArrayList<>();
+    public List<Pair<Card,List<Integer>>> getAllMoves(){
+        List<Pair<Card,List<Integer>>> moves = new ArrayList<>();
         for (int i = 0; i < board.size(); i++) {
             for (Card c: board.get(i)) {
                 if (c.getOwnNumber() != Card.cardNumber.EMPTY) {
@@ -182,6 +215,11 @@ public class Board {
                 }
             }
         }
+
+        // add a get new cards move
+        List<Integer> temp =  new ArrayList<>();
+        temp.add(0);
+        moves.add(new Pair<>(new Card(Card.cardColor.EMPTY, Card.cardNumber.HAND, Card.cardType.TURNED, 0, 0),temp));
 
         return moves;
     }
@@ -211,5 +249,9 @@ public class Board {
 
     public List<List<Card>> getGoalPoints() {
         return goalPoints;
+    }
+
+    public List<Card> getHand() {
+        return hand;
     }
 }

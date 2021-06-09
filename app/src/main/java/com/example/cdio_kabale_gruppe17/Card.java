@@ -51,7 +51,8 @@ public class Card {
         QUEEN(12),
         KING(13),
         EMPTY(14),
-        TURNED(15);
+        TURNED(15),
+        HAND(16);
 
         private int number;
 

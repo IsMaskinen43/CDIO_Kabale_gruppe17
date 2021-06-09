@@ -2,6 +2,7 @@ package com.example.cdio_kabale_gruppe17;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,9 @@ public class ChooseAdapter extends ArrayAdapter<String> {
 
         ImageView billede = listItem.findViewById(R.id.chooserBillede);
         // first picture is the grayscale so we don't want to show that again
-        billede.setImageBitmap(pictures.get(picPos.get(position)+1));
+        if (texts.get(position).equals("Get some new cards by flipping the hand stack")){
+            billede.setImageBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.bunke));
+        } else billede.setImageBitmap(pictures.get(picPos.get(position)+1));
 
         return listItem;
     }
