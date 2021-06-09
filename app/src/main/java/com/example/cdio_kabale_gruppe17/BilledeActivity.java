@@ -117,6 +117,14 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     public void removeBitmap(int position){
+        for (List<Card> l: currBoard.getCards()) {
+            for (Card c: l) {
+                if (c.getPicPos() >= position-1){
+                    c.setPicPos(c.getPicPos()-1);
+                }
+            }
+        }
+
         bitmapList.remove(position);
         layout.removeAllViews();
 

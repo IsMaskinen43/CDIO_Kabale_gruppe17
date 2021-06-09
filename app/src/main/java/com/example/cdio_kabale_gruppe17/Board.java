@@ -109,10 +109,12 @@ public class Board {
                 }
                 if (!isInMargin) {
                     // if not in average margin we add a new average
-                    averages.add(columnList.get(i));
-                    numberOfAverages.add(1);
-                    board.get(averages.size()-1).add(currentCard);
-                    currentCard.setColumn(averages.size()-1);
+                    if (averages.size() != 7) {
+                        averages.add(columnList.get(i));
+                        numberOfAverages.add(1);
+                        board.get(averages.size() - 1).add(currentCard);
+                        currentCard.setColumn(averages.size() - 1);
+                    }
                 }
             }
         }
