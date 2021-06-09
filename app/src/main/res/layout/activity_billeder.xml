@@ -9,11 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:text="If there are pictures of something else than cards, try changing the resize ratio"
-        android:textColor="@color/black"
         android:gravity="center"
-        android:textSize="20sp"
-        />
+        android:text="Keep the downscale size as small as possible and remove inconsistencies"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/resizerText"

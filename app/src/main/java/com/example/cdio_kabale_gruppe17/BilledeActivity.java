@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,11 +27,12 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
     private Button continueButton;
     private List<Bitmap> bitmapList = new ArrayList<>();
     private SharedPreferences prefs;
-
+    private int offset = 0;
+    private int prevPos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.billeder);
+        setContentView(R.layout.activity_billeder);
 
         ctx = this;
         currBoard = Board.getInstance();
@@ -94,7 +93,9 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
         BilledeAdapter adapter = new BilledeAdapter(ctx, bitmapList);
         for (int i = 0; i < bitmapList.size(); i++) {
             View v = adapter.getView(i, null, null);
+
             layout.addView(v);
+
         }
 
         currBoard.instantiate();
@@ -115,10 +116,24 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
         }*/
     }
 
+    public void removeBitmap(int position){
+        bitmapList.remove(position);
+        layout.removeAllViews();
+
+        BilledeAdapter adapter = new BilledeAdapter(ctx, bitmapList);
+        for (int i = 0; i < bitmapList.size(); i++) {
+            View v = adapter.getView(i, null, null);
+
+            layout.addView(v);
+
+        }
+
+    }
 
     @Override
     public void onClick(View v) {
         if (v == continueButton) {
+
             PictureHelperClass.getInstance().setPictureList(bitmapList);
             Intent i = new Intent(this, Chooser.class);
             startActivity(i);

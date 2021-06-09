@@ -7,12 +7,14 @@ import androidx.core.content.FileProvider;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int CAMERA_REQUEST = 1888;
     private Uri photoUri;
     public ImageView img;
-
+    private SharedPreferences prefs;
     private Button fromCamera, fromGallery;
 
     static {
@@ -62,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         fromCamera.setOnClickListener(this);
         fromGallery.setOnClickListener(this);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
     }
 
@@ -97,6 +101,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
         }
+    }
+
+
+    private void startIntent (Bitmap photo){
+
+        CardDetector.getCard(photo, Integer.parseInt(prefs.getString("resizeRatio","4")));
+
+        Intent i = new Intent(this, BilledeActivity.class);
+        startActivity(i);
     }
 
 
@@ -158,23 +171,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-        private void startIntent (Bitmap photo){
-
-            CardDetector.getCard(photo, 4);
-
-            Intent i = new Intent(this, BilledeActivity.class);
-            startActivity(i);
-        }
 
     private void showCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        System.out.println("HEJ1");
         if (intent.resolveActivity(this.getPackageManager()) != null) {
             File file = null;
             try {
-                System.out.println("HEJ2");
                 file = createImageFile();
-                System.out.println("HEJ3");
             } catch (IOException e) {
                 e.printStackTrace();
             }
