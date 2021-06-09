@@ -71,7 +71,7 @@ public class BilledeActivity extends AppCompatActivity {
             bitmapList.add(nytbitmap);
         }
         bitmapList.add(CardDetector.grayScale);
-
+        bitmapList.add(CardDetector.scaleTest);
         layout.removeAllViews();
         BilledeAdapter adapter = new BilledeAdapter(ctx, bitmapList);
         for (int i = 0; i < bitmapList.size(); i++) {

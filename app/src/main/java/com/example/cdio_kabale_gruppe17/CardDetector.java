@@ -29,6 +29,7 @@ public class CardDetector {
     public static List<int[]> pixels = new ArrayList<>();
     public static Bitmap lastUsedBitmap;
     public static Bitmap grayScale;
+    public static Bitmap scaleTest;
 
     public static void getCard(Bitmap bitmap, float resizeRatio){
         if (bitmap != null) lastUsedBitmap = bitmap;
@@ -49,12 +50,13 @@ public class CardDetector {
         // make grayscale
         Imgproc.cvtColor(billedeMat, billedeMat, Imgproc.COLOR_RGB2RGBA);
         Imgproc.cvtColor(billedeMat, billedeMat, Imgproc.COLOR_RGBA2GRAY);
-
+        scaleTest = matToBitmapGray(billedeMat);
         // blur image
-        //Imgproc.medianBlur(billedeMat, billedeMat, 9);
+
         Imgproc.GaussianBlur(billedeMat, billedeMat, new Size(7,7),0);
 
         // make canny
+
         Imgproc.Canny(billedeMat, billedeMat, 10, 100);
 
         // dilate picture
@@ -78,13 +80,14 @@ public class CardDetector {
             long total = approxCurve.total();
             if (total == 4){
                 // draw the contour onto the drawing
-                Imgproc.drawContours(drawing, contours, i , new Scalar(255,255,255), -1);
+                Imgproc.drawContours(drawing, contours, i , new Scalar(255,255,255), 3);
                 pixels.add(getBitmapPixels(matToBitmap(resizedImage), rect.x, rect.y, rect.width, rect.height));
                 width.add(rect.width);
                 height.add(rect.height);
             }
         }
         grayScale = matToBitmapGray(drawing);
+
     }
 
 
