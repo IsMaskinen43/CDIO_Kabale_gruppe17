@@ -19,7 +19,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CDIO_Kabale_gruppe17">
         <activity
-            android:screenOrientation="landscape"
             android:name=".ShowBoard" />
         <activity android:name=".Chooser" />
         <activity android:name=".MainActivity">
