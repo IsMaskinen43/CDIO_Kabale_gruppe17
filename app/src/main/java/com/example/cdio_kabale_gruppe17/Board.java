@@ -30,6 +30,7 @@ public class Board {
         // instantiate the seven columns
         board.clear();
         goalPoints.clear();
+        hand.clear();
         for (int i = 0; i < 7; i++) {
             board.add(new ArrayList<>());
         }
@@ -126,6 +127,7 @@ public class Board {
 
     // move a card from one list to another (no logic in function)
     public void moveCard(Card target, List<Card> origin, List<Card> end) {
+        // if the card is on the board
         if (target.getOwnNumber() != Card.cardNumber.HAND) {
             List<Card> tempList = new ArrayList<>();
             // first iterate from the bottom of the column until we find the target card
@@ -151,7 +153,18 @@ public class Board {
             if (origin.isEmpty()) {
                 origin.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, endCol, 0));
             }
-
+        }
+        // check if it is in the hand but not find new cards
+        /*else if (target.getOwnNumber() != Card.cardNumber.TURNED && target.getOwnNumber() != Card.cardNumber.EMPTY){
+            origin.remove(target);
+            target.setColumn(end.get(end.size()-1).getColumn());
+            end.add(target);
+            origin.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, target.getColumn(), 0));
+        } */else{
+            // find new cards
+            for (int i = 0; i < hand.size(); i++) {
+                hand.set(i, new Card(Card.cardColor.EMPTY, Card.cardNumber.TURNED, Card.cardType.TURNED, i, 0));
+            }
         }
     }
 
@@ -181,7 +194,6 @@ public class Board {
 
 
     // will find all applicable moves for a card in any other column
-    // TODO implementer point bunkerne og ændr til kun at finde kolonne
     public Pair<Card, List<Integer>> getMovesForCard(Card start, int column){
         List<Integer> moveList = new ArrayList<>();
         // get each column on the board
@@ -213,6 +225,12 @@ public class Board {
                 if (c.getOwnNumber() != Card.cardNumber.EMPTY) {
                     moves.add(getMovesForCard(c, i));
                 }
+            }
+        }
+        // check the cards in the hand
+        for (int i = 0; i < hand.size(); i++) {
+            if (hand.get(i).getOwnNumber() != Card.cardNumber.EMPTY) {
+                moves.add(getMovesForCard(hand.get(i), i));
             }
         }
 

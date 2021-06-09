@@ -47,7 +47,6 @@ public class Chooser extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (moves.get(position).second.second < 7) {
-                    // TODO Fix movecard funktionen
                     Board.getInstance().moveCard(moves.get(position).second.first, Board.getInstance().getBoard().get(moves.get(position).second.first.getColumn()), Board.getInstance().getBoard().get(moves.get(position).second.second));
 
                 } else {

@@ -95,15 +95,21 @@ public class ShowBoard extends AppCompatActivity implements View.OnClickListener
 
 
         if (hand.get(0).getOwnNumber() == Card.cardNumber.EMPTY){
-            hand1.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else hand1.setImageBitmap(pics.get(hand.get(0).getPicPos()));
+            hand3.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
+        } else if (hand.get(0).getOwnNumber() == Card.cardNumber.TURNED){
+            hand3.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.question));
+        } else hand3.setImageBitmap(pics.get(hand.get(0).getPicPos()));
 
         if (hand.get(1).getOwnNumber() == Card.cardNumber.EMPTY){
-            hand1.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else hand1.setImageBitmap(pics.get(hand.get(1).getPicPos()));
+            hand2.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
+        } else if (hand.get(1).getOwnNumber() == Card.cardNumber.TURNED){
+            hand2.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.question));
+        } else hand2.setImageBitmap(pics.get(hand.get(1).getPicPos()));
 
         if (hand.get(2).getOwnNumber() == Card.cardNumber.EMPTY){
             hand1.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
+        } else if (hand.get(2).getOwnNumber() == Card.cardNumber.TURNED){
+            hand1.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.question));
         } else hand1.setImageBitmap(pics.get(hand.get(2).getPicPos()));
 
 

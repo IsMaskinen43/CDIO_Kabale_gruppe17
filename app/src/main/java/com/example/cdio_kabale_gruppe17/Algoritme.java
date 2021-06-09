@@ -19,9 +19,7 @@ public class Algoritme {
         return instance;
     }
 
-    // TODO lav en algoritme til at finde de bedste træk baseret på 7 regler
     // get the (5 or 10) best possible move according to some factors
-
     /**
      * @param board (state of the current board)
      * @return a list of pair with a card and the column number
