@@ -155,12 +155,12 @@ public class Board {
             }
         }
         // check if it is in the hand but not find new cards
-        else if (target.getOwnNumber() != Card.cardNumber.TURNED && target.getOwnNumber() != Card.cardNumber.EMPTY){
+        /*else if (target.getOwnNumber() != Card.cardNumber.TURNED && target.getOwnNumber() != Card.cardNumber.EMPTY){
             origin.remove(target);
             target.setColumn(end.get(end.size()-1).getColumn());
             end.add(target);
             origin.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, target.getColumn(), 0));
-        } else{
+        } */else{
             // find new cards
             for (int i = 0; i < hand.size(); i++) {
                 hand.set(i, new Card(Card.cardColor.EMPTY, Card.cardNumber.TURNED, Card.cardType.TURNED, i, 0));
