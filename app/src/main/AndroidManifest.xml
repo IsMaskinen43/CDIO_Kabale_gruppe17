@@ -18,12 +18,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CDIO_Kabale_gruppe17"
-        android:maxSdkVersion="30"
-        >
-
-
+        android:maxSdkVersion="30">
+        <activity android:name=".ShowBoard"></activity>
+        <activity android:name=".Chooser" />
         <activity android:name=".MainActivity">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
