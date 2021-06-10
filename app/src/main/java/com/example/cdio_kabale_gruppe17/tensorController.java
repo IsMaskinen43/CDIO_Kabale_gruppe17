@@ -59,6 +59,7 @@ public class tensorController {
         } catch (IOException e){
             Log.e("tfliteSupport", "Error reading model", e);
         }
+        Log.d("TensorFlow", "runmodel: "+ Arrays.toString(probabilityBuffer.getFloatArray()));
         return getStringFromTensorOut(Arrays.asList(probabilityBuffer.getFloatArray()));
 
     }
@@ -67,9 +68,9 @@ public class tensorController {
         float num = 0;
         int index = 0;
         int c = 0;
-        for (float[] a : list) {
-            if (a[0] > num) {
-                num = a[0];
+        for (float a : list.get(0)) {
+            if (a > num) {
+                num = a;
                 index = c;
             }
             c++;

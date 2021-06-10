@@ -68,6 +68,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
+        tensorController tc = new tensorController(this);
+        Log.d(TAG,"output: " +tc.runmodel(BitmapFactory.decodeResource(this.getResources(), R.drawable.h6)));
+
     }
 
 
