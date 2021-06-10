@@ -48,77 +48,90 @@ public class ShowBoard extends AppCompatActivity implements View.OnClickListener
         List<Bitmap> pics = PictureHelperClass.getInstance().getPictureList();
         List<Pair<Integer, Integer>> bannedPositions = Board.getInstance().getBannedCards();
 
-        // TODO LAV DET HER OM TIL NOGET PÆNT PRETTY PLS ( ;-;)
-        if (goal.get(0).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(goal.get(0).get(0).getxCoord(), goal.get(0).get(0).getyCoord()))){
-            goalPoint4.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else goalPoint4.setImageBitmap(pics.get(goal.get(0).get(0).getPicPos()+1));
+        // set the correct pic on the goal positions
+        for (int i = 0; i < goal.size(); i++) {
+            ImageView currentView = null;
+            switch (i){
+                case 0:
+                    currentView = goalPoint4;
+                    break;
+                case 1:
+                    currentView = goalPoint3;
+                    break;
+                case 2:
+                    currentView = goalPoint2;
+                    break;
+                case 3:
+                    currentView = goalPoint1;
+                    break;
+            }
+            if (goal.get(i).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(goal.get(i).get(0).getxCoord(), goal.get(i).get(0).getyCoord()))) {
+                currentView.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
 
-        if (goal.get(1).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(goal.get(1).get(0).getxCoord(), goal.get(1).get(0).getyCoord()))){
-            goalPoint3.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else goalPoint3.setImageBitmap(pics.get(goal.get(1).get(0).getPicPos()+1));
-
-        if (goal.get(2).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(goal.get(2).get(0).getxCoord(), goal.get(2).get(0).getyCoord()))){
-            goalPoint2.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else goalPoint2.setImageBitmap(pics.get(goal.get(2).get(0).getPicPos()+1));
-
-        if (goal.get(3).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(goal.get(3).get(0).getxCoord(), goal.get(3).get(0).getyCoord()))){
-            goalPoint1.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else goalPoint1.setImageBitmap(pics.get(goal.get(3).get(0).getPicPos()+1));
-
-
-
-
-        if (board.get(0).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(board.get(0).get(0).getxCoord(), board.get(0).get(0).getyCoord()))){
-            boardPoint7.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else boardPoint7.setImageBitmap(pics.get(board.get(0).get(0).getPicPos()+1));
-
-        if (board.get(1).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(board.get(1).get(0).getxCoord(), board.get(1).get(0).getyCoord()))){
-            boardPoint6.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else boardPoint6.setImageBitmap(pics.get(board.get(1).get(0).getPicPos()+1));
-
-        if (board.get(2).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(board.get(2).get(0).getxCoord(), board.get(2).get(0).getyCoord()))){
-            boardPoint5.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else boardPoint5.setImageBitmap(pics.get(board.get(2).get(0).getPicPos()+1));
-
-        if (board.get(3).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(board.get(3).get(0).getxCoord(), board.get(3).get(0).getyCoord()))){
-            boardPoint4.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else boardPoint4.setImageBitmap(pics.get(board.get(3).get(0).getPicPos()+1));
-
-        if (board.get(4).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(board.get(4).get(0).getxCoord(), board.get(4).get(0).getyCoord()))){
-            boardPoint3.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else boardPoint3.setImageBitmap(pics.get(board.get(4).get(0).getPicPos()+1));
-
-        if (board.get(5).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(board.get(5).get(0).getxCoord(), board.get(5).get(0).getyCoord()))){
-            boardPoint2.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else boardPoint2.setImageBitmap(pics.get(board.get(5).get(0).getPicPos()+1));
-
-        if (board.get(6).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(board.get(6).get(0).getxCoord(), board.get(6).get(0).getyCoord()))){
-            boardPoint1.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else boardPoint1.setImageBitmap(pics.get(board.get(6).get(0).getPicPos()+1));
+            } else{
+                currentView.setImageBitmap(pics.get(goal.get(i).get(0).getPicPos()+1));
+            }
+        }
 
 
-        if (hand.get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(hand.get(0).getxCoord(), hand.get(0).getyCoord()))){
-            hand3.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else if (hand.get(0).getOwnNumber() == Card.cardNumber.TURNED){
-            hand3.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.question));
-        } else hand3.setImageBitmap(pics.get(hand.get(0).getPicPos()));
+        // set the correct pic on the board positions
+        for (int i = 0; i < board.size(); i++) {
+            ImageView currentView = null;
+            switch (i){
+                case 0:
+                    currentView = boardPoint7;
+                    break;
+                case 1:
+                    currentView = boardPoint6;
+                    break;
+                case 2:
+                    currentView = boardPoint5;
+                    break;
+                case 3:
+                    currentView = boardPoint4;
+                    break;
+                case 4:
+                    currentView = boardPoint3;
+                    break;
+                case 5:
+                    currentView = boardPoint2;
+                    break;
+                case 6:
+                    currentView = boardPoint1;
+                    break;
+            }
 
-        if (hand.get(1).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(hand.get(1).getxCoord(), hand.get(1).getyCoord()))){
-            hand2.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else if (hand.get(1).getOwnNumber() == Card.cardNumber.TURNED){
-            hand2.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.question));
-        } else hand2.setImageBitmap(pics.get(hand.get(1).getPicPos()));
+            if (board.get(i).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(board.get(i).get(0).getxCoord(), board.get(i).get(0).getyCoord()))){
+                currentView.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
+            } else{
+                currentView.setImageBitmap(pics.get(board.get(i).get(0).getPicPos()+1));
+            }
+        }
 
-        if (hand.get(2).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(hand.get(2).getxCoord(), hand.get(2).getyCoord()))){
-            hand1.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
-        } else if (hand.get(2).getOwnNumber() == Card.cardNumber.TURNED){
-            hand1.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.question));
-        } else hand1.setImageBitmap(pics.get(hand.get(2).getPicPos()));
-
+        // set the correct pic on the hand positions
+        for (int i = 0; i < hand.size(); i++) {
+            ImageView currentView = null;
+            switch (i){
+                case 0:
+                    currentView = hand3;
+                    break;
+                case 1:
+                    currentView = hand2;
+                    break;
+                case 2:
+                    currentView = hand1;
+                    break;
+            }
+            if (hand.get(i).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(hand.get(i).getxCoord(), hand.get(i).getyCoord()))){
+                currentView.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
+            } else if (hand.get(i).getOwnNumber() == Card.cardNumber.TURNED){
+                currentView.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.question));
+            } else {
+                currentView.setImageBitmap(pics.get(hand.get(i).getPicPos()+1));
+            }
+        }
 
         continueButton.setOnClickListener(this);
-
-
     }
 
     @Override
