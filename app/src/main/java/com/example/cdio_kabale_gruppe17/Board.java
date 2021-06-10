@@ -8,7 +8,6 @@ import java.util.List;
 
 public class Board {
 
-    // TODO lav en liste der indeholder kort som ikke skal køres getmove på
     private static Board instance = null;
     private static List<List<Card>> board = new ArrayList<>();
     private static List<List<Card>> goalPoints = new ArrayList<>();
@@ -28,7 +27,6 @@ public class Board {
 
 
     // instantiate the board with some lists based on the columns
-    // TODO fix så den sorterer board efter x koordinater
     public void instantiate(){
         // set the margin that the distance between cards in same column can be
         float margin = 0.5f;
@@ -82,8 +80,8 @@ public class Board {
             if (averages.isEmpty()){
                 averages.add(columnList.get(i));
                 numberOfAverages.add(1);
-                board.get(averages.size()-1).add(currentCard);
                 currentCard.setColumn(averages.size()-1);
+                board.get(averages.size()-1).add(currentCard);
             }
             // else we check if this point is in the margin of the average
             else{
@@ -93,25 +91,18 @@ public class Board {
                         numberOfAverages.set(j, numberOfAverages.get(j)+1);
                         averages.set(j, (averages.get(j)+columnList.get(i))/(numberOfAverages.get(j)));
                         isInMargin = true;
-                        // TODO change to a collections sort
-                        // save the cards in a list if the current card is in the not at the bottom of the column
-                        List<Card> tempList = new ArrayList<>();
-                        // check the y coordinate to determine where in the column the card should be placed
-                        for (int k = board.get(j).size(); k > 0; k--) {
-                            // we remove all cards that are beneath the current card
-                            if (board.get(j).get(k-1).getyCoord() < currentCard.getyCoord()){
-                                tempList.add(board.get(j).get(k-1));
-                                board.get(j).remove(k-1);
-                            }
-                            else break;
-                        }
+                        currentCard.setColumn(j);
                         // we add the current card to the column
                         board.get(j).add(currentCard);
-                        // we add the removed cards back
-                        for (int k = tempList.size()-1; k > 0; k--) {
-                            board.get(j).add(tempList.get(k));
-                        }
-                        currentCard.setColumn(j);
+                        // sort the list based on the y coordinate
+                        board.get(j).sort(new Comparator<Card>() {
+                            @Override
+                            public int compare(Card o1, Card o2) {
+                                if (o1.getyCoord() > o2.getyCoord()) return -1;
+                                else if (o1.getyCoord() == o2.getyCoord()) return 0;
+                                else return 1;
+                            }
+                        });
                         break;
                     }
                 }
@@ -120,8 +111,8 @@ public class Board {
                     if (averages.size() != 7) {
                         averages.add(columnList.get(i));
                         numberOfAverages.add(1);
-                        board.get(averages.size() - 1).add(currentCard);
                         currentCard.setColumn(averages.size() - 1);
+                        board.get(averages.size() - 1).add(currentCard);
                     }
                 }
             }
@@ -139,6 +130,12 @@ public class Board {
             }
         });
 
+        // set the correct column positions
+        for (int i = 0; i < board.size(); i++) {
+            for (int j = 0; j < board.get(i).size(); j++) {
+                board.get(i).get(j).setColumn(i);
+            }
+        }
 
 
         // create empty lists for the rest
@@ -179,13 +176,13 @@ public class Board {
             }
         }
         // check if it is in the hand but not find new cards
-        // TODO fix det her shit ved at rykke kort fra hand til board
-        /*else if (target.getOwnNumber() != Card.cardNumber.TURNED && target.getOwnNumber() != Card.cardNumber.EMPTY){
+        // TODO fix det her shit ved at rykke kort fra hand til board (muligvis fikset)
+        else if (target.getOwnType() != Card.cardType.TURNED && target.getOwnNumber() != Card.cardNumber.EMPTY){
             origin.remove(target);
             target.setColumn(end.get(end.size()-1).getColumn());
             end.add(target);
             origin.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, target.getColumn(), 0));
-        } */else{
+        } else{
             // find new cards
             for (int i = 0; i < hand.size(); i++) {
                 hand.set(i, new Card(Card.cardColor.EMPTY, Card.cardNumber.TURNED, Card.cardType.TURNED, i, 0));
@@ -255,10 +252,11 @@ public class Board {
                 }
             }
         }
-        // check the cards in the hand
-        for (int i = 0; i < hand.size(); i++) {
+        // check the cards in the hand but only add the move for the top card
+        for (int i = hand.size()-1; i > 0; i--) {
             if (hand.get(i).getOwnNumber() != Card.cardNumber.EMPTY) {
                 moves.add(getMovesForCard(hand.get(i), i));
+                break;
             }
         }
 
@@ -318,7 +316,7 @@ public class Board {
                 if (l.get(i).getxCoord() == xyCoords.first && l.get(i).getyCoord() == xyCoords.second) {
                     int column = l.get(i).getColumn();
                     l.set(i, new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, column, 0));
-                    removeRedundantCards(column-1);
+                    removeRedundantCards(column);
                     break;
                 }
             }
@@ -333,6 +331,7 @@ public class Board {
         // if there is more than 1 card then remove all empty cards
         if (board.get(column).size() > 1) {
             for (int i = 0; i < board.get(column).size(); i++) {
+                if (board.size() == 1) break;
                 if (board.get(column).get(i).getOwnColor() == Card.cardColor.EMPTY ||  board.get(column).get(i).getOwnNumber() == Card.cardNumber.EMPTY){
                     board.get(column).remove(board.get(column).get(i));
                     i--;
