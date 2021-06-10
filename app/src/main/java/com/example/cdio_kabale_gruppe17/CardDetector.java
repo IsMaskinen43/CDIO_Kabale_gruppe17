@@ -1,15 +1,11 @@
 package com.example.cdio_kabale_gruppe17;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.util.Log;
 
-import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
 import org.opencv.core.CvException;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfInt;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
@@ -17,16 +13,16 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.osgi.OpenCVNativeLoader;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class CardDetector {
     public static List<Integer> height = new ArrayList<>();
     public static List<Integer> width = new ArrayList<>();
     public static List<int[]> pixels = new ArrayList<>();
+    public static List<Integer> xCoords = new ArrayList<>();
+    public static List<Integer> yCoords = new ArrayList<>();
     public static Bitmap lastUsedBitmap;
     public static Bitmap grayScale;
 
@@ -36,6 +32,8 @@ public class CardDetector {
         height.clear();
         width.clear();
         pixels.clear();
+        xCoords.clear();
+        yCoords.clear();
         // convert to mat
         Mat billedeMat = new Mat();
         Mat resizedImage = new Mat();
@@ -47,15 +45,15 @@ public class CardDetector {
         Imgproc.resize(resizedImage, resizedImage, downscale);
 
         // make grayscale
-        Imgproc.cvtColor(billedeMat, billedeMat, Imgproc.COLOR_RGB2RGBA);
-        Imgproc.cvtColor(billedeMat, billedeMat, Imgproc.COLOR_RGBA2GRAY);
+        Imgproc.cvtColor(billedeMat, billedeMat, Imgproc.COLOR_RGB2GRAY);
+        //Imgproc.cvtColor(billedeMat, billedeMat, Imgproc.COLOR_RGBA2GRAY);
 
         // blur image
         Imgproc.medianBlur(billedeMat, billedeMat, 9);
-        //Imgproc.GaussianBlur(billedeMat, billedeMat, new Size(13,13),0);
+        //Imgproc.GaussianBlur(billedeMat, billedeMat, new Size(9,9),0);
 
         // make canny
-        Imgproc.Canny(billedeMat, billedeMat, 100, 300);
+        Imgproc.Canny(billedeMat, billedeMat, 10, 100);
 
         // dilate picture
         Imgproc.dilate(billedeMat, billedeMat, new Mat(), new Point(-1, -1), 1);
@@ -70,20 +68,25 @@ public class CardDetector {
 
         MatOfPoint2f matOfPoint2f = new MatOfPoint2f();
         MatOfPoint2f approxCurve = new MatOfPoint2f();
-        for (int i = 0; i < contours.size(); i++){
+        for (int i = 0; i < contours.size(); i++) {
             MatOfPoint contour = contours.get(i);
             Rect rect = Imgproc.boundingRect(contour);
             matOfPoint2f.fromList(contour.toList());
             Imgproc.approxPolyDP(matOfPoint2f, approxCurve, Imgproc.arcLength(matOfPoint2f, true) * 0.02, true);
             long total = approxCurve.total();
-            if (total == 4){
+            if (total == 4) {
                 // draw the contour onto the drawing
-                Imgproc.drawContours(drawing, contours, i , new Scalar(255,255,255), -1);
+                Imgproc.drawContours(drawing, contours, i, new Scalar(255, 255, 255), -1);
                 pixels.add(getBitmapPixels(matToBitmap(resizedImage), rect.x, rect.y, rect.width, rect.height));
                 width.add(rect.width);
                 height.add(rect.height);
+                xCoords.add(rect.x);
+                yCoords.add(rect.y);
             }
         }
+        /*for (int i = 0; i < xCoords.size(); i++) {
+            drawLine(drawing, new Point(xCoords.get(i), yCoords.get(i)), new Point(xCoords.get(i)+300, yCoords.get(i)+300));
+        }*/
         grayScale = matToBitmapGray(drawing);
     }
 
@@ -114,14 +117,7 @@ public class CardDetector {
         return bmp;
     }
 
-    private static double angle(Point pt1, Point pt2, Point pt0) {
-        double dx1 = pt1.x - pt0.x;
-        double dy1 = pt1.y - pt0.y;
-        double dx2 = pt2.x - pt0.x;
-        double dy2 = pt2.y - pt0.y;
-        return (dx1*dx2 + dy1*dy2)/Math.sqrt((dx1*dx1 + dy1*dy1)*(dx2*dx2 + dy2*dy2) + 1e-10);
-    }
-
+    // TODO fix out of memory error ved resizeratio 1
     private static int[] getBitmapPixels(Bitmap bitmap, int x, int y, int width, int height) {
         int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
         bitmap.getPixels(pixels, 0, bitmap.getWidth(), x, y,
@@ -135,4 +131,7 @@ public class CardDetector {
     }
 
 
+    private static void drawLine(Mat img, Point pt1, Point pt2){
+        Imgproc.line(img, pt1, pt2, new Scalar(0,255,0), 10);
+    }
 }
