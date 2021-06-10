@@ -49,7 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!OpenCVLoader.initDebug())
             Log.d(TAG, "Unable to load OpenCV");
         else {
-            Log.d(TAG, "OpenCV loaded");
+            Log.d(TAG, "OpesnCV loaded");
+            Log.d(TAG, "OpesnCV loaded");
         }
     }
 
