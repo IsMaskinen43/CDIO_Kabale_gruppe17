@@ -48,7 +48,7 @@ public class ShowBoard extends AppCompatActivity implements View.OnClickListener
         List<Bitmap> pics = PictureHelperClass.getInstance().getPictureList();
         List<Pair<Integer, Integer>> bannedPositions = Board.getInstance().getBannedCards();
 
-
+        // TODO LAV DET HER OM TIL NOGET PÆNT PRETTY PLS ( ;-;)
         if (goal.get(0).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(goal.get(0).get(0).getxCoord(), goal.get(0).get(0).getyCoord()))){
             goalPoint4.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
         } else goalPoint4.setImageBitmap(pics.get(goal.get(0).get(0).getPicPos()+1));
