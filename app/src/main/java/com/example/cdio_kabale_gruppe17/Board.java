@@ -2,13 +2,18 @@ package com.example.cdio_kabale_gruppe17;
 
 import android.util.Pair;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Board {
+
+    // TODO lav en liste der indeholder kort som ikke skal køres getmove på
     private static Board instance = null;
     private static List<List<Card>> board = new ArrayList<>();
     private static List<List<Card>> goalPoints = new ArrayList<>();
     private static List<Card> hand = new ArrayList<>();
+    private static List<Pair<Integer,Integer>> bannedCards = new ArrayList<>();
 
 
     private Board(){
@@ -23,6 +28,7 @@ public class Board {
 
 
     // instantiate the board with some lists based on the columns
+    // TODO fix så den sorterer board efter x koordinater
     public void instantiate(){
         // set the margin that the distance between cards in same column can be
         float margin = 0.5f;
@@ -31,6 +37,7 @@ public class Board {
         board.clear();
         goalPoints.clear();
         hand.clear();
+        bannedCards.clear();
         for (int i = 0; i < 7; i++) {
             board.add(new ArrayList<>());
         }
@@ -86,6 +93,7 @@ public class Board {
                         numberOfAverages.set(j, numberOfAverages.get(j)+1);
                         averages.set(j, (averages.get(j)+columnList.get(i))/(numberOfAverages.get(j)));
                         isInMargin = true;
+                        // TODO change to a collections sort
                         // save the cards in a list if the current card is in the not at the bottom of the column
                         List<Card> tempList = new ArrayList<>();
                         // check the y coordinate to determine where in the column the card should be placed
@@ -118,6 +126,20 @@ public class Board {
                 }
             }
         }
+
+        // sort the board list according to the x coordinates of the cards
+        board.sort(new Comparator<List<Card>>() {
+            @Override
+            public int compare(List<Card> o1, List<Card> o2) {
+                if (o2.size() == 0) return -1;
+                if (o1.size() == 0) return 1;
+                if (o1.get(0).getxCoord() > o2.get(0).getxCoord()) return -1;
+                else if (o1.get(0).getxCoord() == o2.get(0).getxCoord()) return 0;
+                else return 1;
+            }
+        });
+
+
 
         // create empty lists for the rest
         for (int i = averages.size(); i < 7; i++) {
@@ -157,6 +179,7 @@ public class Board {
             }
         }
         // check if it is in the hand but not find new cards
+        // TODO fix det her shit ved at rykke kort fra hand til board
         /*else if (target.getOwnNumber() != Card.cardNumber.TURNED && target.getOwnNumber() != Card.cardNumber.EMPTY){
             origin.remove(target);
             target.setColumn(end.get(end.size()-1).getColumn());
@@ -225,7 +248,10 @@ public class Board {
         for (int i = 0; i < board.size(); i++) {
             for (Card c: board.get(i)) {
                 if (c.getOwnNumber() != Card.cardNumber.EMPTY) {
-                    moves.add(getMovesForCard(c, i));
+                    Pair<Integer, Integer> temp = new Pair<>(c.getxCoord(), c.getyCoord());
+                    if (!bannedCards.contains(temp)) {
+                        moves.add(getMovesForCard(c, i));
+                    }
                 }
             }
         }
@@ -274,4 +300,45 @@ public class Board {
     public List<Card> getHand() {
         return hand;
     }
+
+    public void addBannedCard(Pair<Integer, Integer> xyCoords) {
+        // add the cards to a banned list
+        bannedCards.add(xyCoords);
+
+        // remove them from the board or hand list
+        for (int i = 0; i < hand.size(); i++) {
+            if (hand.get(i).getxCoord() == xyCoords.first && hand.get(i).getyCoord() == xyCoords.second) {
+                int column = hand.get(i).getColumn();
+                hand.set(i, new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, column, 0));
+                break;
+            }
+        }
+        for (List<Card> l: board) {
+            for (int i = 0; i < l.size(); i++) {
+                if (l.get(i).getxCoord() == xyCoords.first && l.get(i).getyCoord() == xyCoords.second) {
+                    int column = l.get(i).getColumn();
+                    l.set(i, new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, column, 0));
+                    removeRedundantCards(column-1);
+                    break;
+                }
+            }
+        }
+    }
+
+    public List<Pair<Integer, Integer>> getBannedCards() {
+        return bannedCards;
+    }
+
+    private void removeRedundantCards(int column) {
+        // if there is more than 1 card then remove all empty cards
+        if (board.get(column).size() > 1) {
+            for (int i = 0; i < board.get(column).size(); i++) {
+                if (board.get(column).get(i).getOwnColor() == Card.cardColor.EMPTY ||  board.get(column).get(i).getOwnNumber() == Card.cardNumber.EMPTY){
+                    board.get(column).remove(board.get(column).get(i));
+                    i--;
+                }
+            }
+        }
+    }
+
 }

@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -117,6 +118,17 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     public void removeBitmap(int position){
+        // add the removed bitmap's card to a banned pool when getting all moves
+        for (List<Card> l: currBoard.getCards()) {
+            for (Card c: l) {
+                if (c.getPicPos() == position-1){
+                    currBoard.addBannedCard(new Pair<>(c.getxCoord(), c.getyCoord()));
+                    break;
+                }
+            }
+        }
+
+        // move all the picpositions higher than the current one down with 1
         for (List<Card> l: currBoard.getCards()) {
             for (Card c: l) {
                 if (c.getPicPos() >= position-1){
@@ -125,6 +137,7 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
 
+        // remove the bitmap and reinstantiate the adapter view
         bitmapList.remove(position);
         layout.removeAllViews();
 
