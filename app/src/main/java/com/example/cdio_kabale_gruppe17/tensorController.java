@@ -14,6 +14,7 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,6 +42,9 @@ public class tensorController {
         // Preprocess the image
         tensorImage.load(bitmap);
         tensorImage = imageProcessor.process(tensorImage);
+        ArrayList<Bitmap> test = new ArrayList<>();
+        test.add( tensorImage.getBitmap());
+        PictureHelperClass.getInstance().setPictureList(test);
 
         // Post-processor which dequantize the result
         TensorBuffer probabilityBuffer =

@@ -16,6 +16,7 @@ public class Board {
     private static List<Pair<Integer,Integer>> bannedCards = new ArrayList<>();
 
 
+
     private Board(){
     }
 
@@ -29,7 +30,7 @@ public class Board {
 
     // instantiate the board with some lists based on the columns
     // TODO fix så den sorterer board efter x koordinater
-    public void instantiate(){
+    public void instantiate(ArrayList<String> cardInfo){
         // set the margin that the distance between cards in same column can be
         float margin = 0.5f;
 
@@ -73,10 +74,12 @@ public class Board {
         List<Integer> numberOfAverages = new ArrayList<>();
         // calculate how many columns there are on the board
         for (int i = 0; i < columnList.size(); i++) {
+            System.out.println(cardInfo.get(i));
             boolean isInMargin = false;
             // få kort fra ML af
             // TODO lav om til machine learning i stedet for predefined
-            Card currentCard = new Card(Card.cardColor.BLACK, Card.cardNumber.ACE, Card.cardType.SPADE, 0, i, CardDetector.yCoords.get(i), CardDetector.xCoords.get(i));
+
+            Card currentCard = new Card(getColor(cardInfo.get(i)), getNumber(cardInfo.get(i)),getType(cardInfo.get(i)), 0, i, CardDetector.yCoords.get(i), CardDetector.xCoords.get(i));
 
             // if there is no other averages in the list add this one
             if (averages.isEmpty()){
@@ -147,6 +150,79 @@ public class Board {
             temp.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, i, 0));
             board.set(i, temp);
         }
+    }
+
+    private Card.cardType getType(String card) {
+        String c = String.valueOf(card.charAt(0));
+        switch (c){
+            case "K":
+                return  Card.cardType.CLUB;
+            case "S":
+                return  Card.cardType.SPADE;
+            case "R":
+                return  Card.cardType.DIAMOND;
+            case "H":
+                return  Card.cardType.HEART;
+            default:
+                return Card.cardType.EMPTY;
+        }
+    }
+
+    private Card.cardNumber getNumber(String card) {
+        String c = String.valueOf(card.charAt(1));
+        switch (c){
+            case "1":
+                return  Card.cardNumber.ONE;
+            case "2":
+                return  Card.cardNumber.TWO;
+            case "3":
+                return  Card.cardNumber.THREE;
+            case "4":
+                return  Card.cardNumber.FOUR;
+            case "5":
+                return  Card.cardNumber.FIVE;
+            case "6":
+                return  Card.cardNumber.SIX;
+            case "7":
+                return  Card.cardNumber.SEVEN;
+            case "8":
+                return  Card.cardNumber.EIGHT;
+            case "9":
+                return  Card.cardNumber.NINE;
+            case "10":
+                return  Card.cardNumber.TEN;
+            case "B":
+                return  Card.cardNumber.JACK;
+            case "D":
+                return  Card.cardNumber.QUEEN;
+            case "K":
+                return  Card.cardNumber.KING;
+            case "A":
+                return  Card.cardNumber.ACE;
+            default:
+                return  Card.cardNumber.EMPTY;
+
+
+        }
+    }
+
+    private Card.cardColor getColor(String card) {
+        String c = String.valueOf(card.charAt(0));
+
+        switch (c){
+
+            case "K":
+            case "S":
+                return  Card.cardColor.BLACK;
+            case "R":
+            case "H":
+                return  Card.cardColor.RED;
+            default:
+                return  Card.cardColor.EMPTY;
+
+        }
+
+
     }
 
     // move a card from one list to another (no logic in function)
