@@ -132,14 +132,17 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     public void removeBitmap(int position){
+        boolean found = false;
         // add the removed bitmap's card to a banned pool when getting all moves
         for (List<Card> l: currBoard.getCards()) {
             for (Card c: l) {
                 if (c.getPicPos() == position-1){
                     currBoard.addBannedCard(new Pair<>(c.getxCoord(), c.getyCoord()));
+                    found = true;
                     break;
                 }
             }
+            if (found) break;
         }
 
         // move all the picpositions higher than the current one down with 1
