@@ -15,11 +15,12 @@
         android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:maxSdkVersion="30"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CDIO_Kabale_gruppe17"
-        android:maxSdkVersion="30">
-        <activity android:name=".ShowBoard"></activity>
+        android:theme="@style/Theme.CDIO_Kabale_gruppe17">
+        <activity android:name=".liveFeed"></activity>
+        <activity android:name=".ShowBoard" />
         <activity android:name=".Chooser" />
         <activity android:name=".MainActivity">
             <intent-filter>
