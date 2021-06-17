@@ -83,6 +83,7 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
     public void setViews(){
         bitmapList.clear();
         bitmapList.add(CardDetector.grayScale);
+        cardInfoGlobal.clear();
         for (int i = 0; i < CardDetector.pixels.size(); i++) {
             // Create bitmap from the pixels of the card
             Bitmap nytbitmap = Bitmap.createBitmap(CardDetector.width.get(i), CardDetector.height.get(i), Bitmap.Config.ARGB_8888);
