@@ -1,11 +1,6 @@
 package com.example.cdio_kabale_gruppe17;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -22,18 +17,16 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+
 import org.opencv.android.OpenCVLoader;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import static androidx.core.app.ActivityCompat.startActivityForResult;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static String TAG = "opencv";
@@ -79,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (v == fromCamera) {
 
-            try {
+           /* try {
                 if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
                 } else {
@@ -87,7 +80,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+            }*/
+            Intent liveFeed = new Intent(this, com.example.cdio_kabale_gruppe17.liveFeed.class);
+            startActivity(liveFeed);
 
 
         } else if (v == fromGallery) {
