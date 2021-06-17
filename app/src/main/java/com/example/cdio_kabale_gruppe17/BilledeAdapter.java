@@ -5,9 +5,11 @@ import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,12 +19,16 @@ import java.util.List;
 
 public class BilledeAdapter extends ArrayAdapter<Bitmap>  {
     private List<Bitmap> pictures = new ArrayList<>();
+    private List<String> cards = new ArrayList<>();
     private Context context;
+    private BilledeActivity activity;
 
-    public BilledeAdapter(@NonNull Context ctx, @NonNull List<Bitmap> pics){
+    public BilledeAdapter(@NonNull Context ctx, @NonNull List<Bitmap> pics, @NonNull List<String> cards){
         super(ctx, 0, pics);
         this.context = ctx;
         this.pictures = pics;
+        this.cards = cards;
+        this.activity = (BilledeActivity) ctx;
     }
 
     @NonNull
@@ -46,7 +52,39 @@ public class BilledeAdapter extends ArrayAdapter<Bitmap>  {
         } else delete.setVisibility(View.INVISIBLE);
         billede.setImageBitmap(pictures.get(position));
 
+        Spinner dropdown = listItem.findViewById(R.id.dropdown_cards);
+        if(position != 0) {
+            ArrayAdapter<CharSequence> dropDownAdapter = ArrayAdapter.createFromResource(getContext(), R.array.createDropDown, R.layout.spinner_item);
+            dropdown.setAdapter(dropDownAdapter);
+            dropdown.setSelection(getIndex(dropdown, cards.get(position-1)));
+            int currentPos = position;
+            dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    activity.changeSpinnerItem(dropdown.getItemAtPosition(position).toString(),currentPos-1);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+
+
+        } else dropdown.setVisibility(View.INVISIBLE);
+
         return listItem;
     }
 
+    private int getIndex(Spinner spinner, String myString){
+
+        int index = 0;
+
+        for (int i=0;i<spinner.getCount();i++){
+            if (spinner.getItemAtPosition(i).equals(myString)){
+                index = i;
+            }
+        }
+        return index;
+    }
 }

@@ -6,4 +6,59 @@
     values-round/strings.xml for round devices.
     -->
     <string name="hello_world">Hello Square World!</string>
+    <string-array name="createDropDown">
+        <item>--Vælg kort--</item>
+        <item>H2</item>
+        <item>H3</item>
+        <item>H4</item>
+        <item>H5</item>
+        <item>H6</item>
+        <item>H7</item>
+        <item>H8</item>
+        <item>H9</item>
+        <item>H10</item>
+        <item>HB</item>
+        <item>HD</item>
+        <item>HK</item>
+        <item>HA</item>
+        <item>K2</item>
+        <item>K3</item>
+        <item>K4</item>
+        <item>K5</item>
+        <item>K6</item>
+        <item>K7</item>
+        <item>K8</item>
+        <item>K9</item>
+        <item>K10</item>
+        <item>KB</item>
+        <item>KD</item>
+        <item>KK</item>
+        <item>KA</item>
+        <item>R2</item>
+        <item>R3</item>
+        <item>R4</item>
+        <item>R5</item>
+        <item>R6</item>
+        <item>R7</item>
+        <item>R8</item>
+        <item>R9</item>
+        <item>R10</item>
+        <item>RB</item>
+        <item>RD</item>
+        <item>RK</item>
+        <item>RA</item>
+        <item>S2</item>
+        <item>S3</item>
+        <item>S4</item>
+        <item>S5</item>
+        <item>S6</item>
+        <item>S7</item>
+        <item>S8</item>
+        <item>S9</item>
+        <item>S10</item>
+        <item>SB</item>
+        <item>SD</item>
+        <item>SK</item>
+        <item>SA</item>
+    </string-array>
 </resources>

@@ -31,6 +31,9 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
     private SharedPreferences prefs;
     private int offset = 0;
     private int prevPos;
+    private List<String> cardInfoGlobal = new ArrayList<>();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,10 +85,10 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
         bitmapList.add(CardDetector.grayScale);
         for (int i = 0; i < CardDetector.pixels.size(); i++) {
             // Create bitmap from the pixels of the card
-            Bitmap nytbitmap = Bitmap.createBitmap(CardDetector.width.get(i)/4, CardDetector.height.get(i)/4, Bitmap.Config.ARGB_8888);
+            Bitmap nytbitmap = Bitmap.createBitmap(CardDetector.width.get(i), CardDetector.height.get(i), Bitmap.Config.ARGB_8888);
 
             // Set the pixels into the bitmap
-            nytbitmap.setPixels(CardDetector.pixels.get(i), 0, CardDetector.width.get(i), 0, 0, CardDetector.width.get(i)/4, CardDetector.height.get(i)/4);
+            nytbitmap.setPixels(CardDetector.pixels.get(i), 0, CardDetector.width.get(i), 0, 0, CardDetector.width.get(i), CardDetector.height.get(i));
 
             // override the old image with the new
             bitmapList.add(nytbitmap);
@@ -104,8 +107,14 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
             bitmapListSliced.add(nytbitmap);
         }
 
+        tensorController tc = new tensorController(this);
+
+        for (int i = 1; i < bitmapList.size(); i++) {
+            cardInfoGlobal.add(tc.runmodel(bitmapList.get(i)));
+        }
+
         layout.removeAllViews();
-        BilledeAdapter adapter = new BilledeAdapter(ctx, bitmapList);
+        BilledeAdapter adapter = new BilledeAdapter(ctx, bitmapList, cardInfoGlobal);
         for (int i = 0; i < bitmapList.size(); i++) {
             View v = adapter.getView(i, null, null);
 
@@ -133,6 +142,14 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
 
     public void removeBitmap(int position){
         boolean found = false;
+        CardDetector.xCoords.remove(position-1);
+        CardDetector.yCoords.remove(position-1);
+        CardDetector.pixels.remove(position-1);
+        CardDetector.width.remove(position-1);
+        CardDetector.height.remove(position-1);
+        cardInfoGlobal.remove(position-1);
+
+
         // add the removed bitmap's card to a banned pool when getting all moves
         for (List<Card> l: currBoard.getCards()) {
             for (Card c: l) {
@@ -159,7 +176,7 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
         bitmapListSliced.remove(position);
         layout.removeAllViews();
 
-        BilledeAdapter adapter = new BilledeAdapter(ctx, bitmapList);
+        BilledeAdapter adapter = new BilledeAdapter(ctx, bitmapList, cardInfoGlobal);
         for (int i = 0; i < bitmapList.size(); i++) {
             View v = adapter.getView(i, null, null);
 
@@ -175,15 +192,15 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
         if (v == continueButton) {
 
             tensorController tc = new tensorController(this);
-            ArrayList<String> cardInfo = new ArrayList<>();
 
-
+            /*
             for (int i = 1; i < bitmapListSliced.size(); i++) {
                 System.out.println(CardDetector.xCoords.get(i-1));
                 cardInfo.add(tc.runmodel(bitmapListSliced.get(i)));
 
-            }
+            }*/
 
+            ArrayList<String> cardInfo = new ArrayList<>(cardInfoGlobal);
 
             currBoard.instantiate(cardInfo);
             currBoard.printBoard();
@@ -192,6 +209,11 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
             startActivity(i);
         }
     }
+
+    public void changeSpinnerItem(String newString, int position){
+        cardInfoGlobal.set(position, newString);
+    }
+
 }
 
 
