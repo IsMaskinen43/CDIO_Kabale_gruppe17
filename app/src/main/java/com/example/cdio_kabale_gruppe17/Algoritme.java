@@ -10,7 +10,7 @@ import java.util.List;
 public class Algoritme {
     private static Algoritme instance = null;
 
-    private Algoritme(){
+    public Algoritme(){
 
     }
 
@@ -133,7 +133,7 @@ public class Algoritme {
     }
 
     // return amount of turned cards in a column
-    private static int getTurnedAmount(List<Card> column) {
+    static int getTurnedAmount(List<Card> column) {
         int counter = 0;
         for (Card c: column) {
             if (c.getOwnNumber() == Card.cardNumber.TURNED) counter++;
@@ -142,7 +142,7 @@ public class Algoritme {
     }
 
     // return true if a queen of opposite color is present on board and not in same column
-    private static boolean isOtherColorQueen(List<List<Card>> board, int currentCol, Card currCard){
+    public static boolean isOtherColorQueen(List<List<Card>> board, int currentCol, Card currCard){
         for (int i = 0; i < board.size(); i++) {
             if (i != currentCol){
                 for (Card c: board.get(i)) {

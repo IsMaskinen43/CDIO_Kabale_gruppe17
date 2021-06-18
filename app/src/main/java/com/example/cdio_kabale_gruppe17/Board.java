@@ -1,30 +1,18 @@
 package com.example.cdio_kabale_gruppe17;
 
 import android.util.Pair;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 public class Board {
 
     // TODO lav en liste der indeholder kort som ikke skal køres getmove på
-    private static Board instance = null;
-    private static List<List<Card>> board = new ArrayList<>();
-    private static List<List<Card>> goalPoints = new ArrayList<>();
-    private static List<Card> hand = new ArrayList<>();
-    private static List<Pair<Integer,Integer>> bannedCards = new ArrayList<>();
-
-
-    private Board(){
-    }
-
-    public static Board getInstance(){
-        if (instance == null){
-            instance = new Board();
-        }
-        return instance;
-    }
+    private  List<List<Card>> board = new ArrayList<>();
+    private  List<List<Card>> goalPoints = new ArrayList<>();
+    private  List<Card> hand = new ArrayList<>();
+    private  List<Pair<Integer,Integer>> bannedCards = new ArrayList<>();
 
 
     // instantiate the board with some lists based on the columns
@@ -417,6 +405,29 @@ public class Board {
                 }
             }
         }
+    }
+
+    public void setBoard(List<List<Card>> board) {
+        this.board = board;
+    }
+
+    public void setGoalPoints(List<List<Card>> goalPoints) {
+        this.goalPoints = goalPoints;
+    }
+
+    public void setHand(List<Card> hand) {
+        this.hand = hand;
+    }
+
+    public void setBannedCards(List<Pair<Integer, Integer>> bannedCards) {
+        this.bannedCards = bannedCards;
+    }
+
+    public Board clone(){
+        Board board2 = new Board();
+        board2.setBannedCards(this.bannedCards);
+        board2.setGoalPoints(this.goalPoints);
+        board2.getBoard(this.board)
     }
 
 }
