@@ -8,6 +8,7 @@ import java.util.List;
 
 public class Board {
 
+    // Alex er noob
     private static Board instance = null;
     private static List<List<Card>> board = new ArrayList<>();
     private static List<List<Card>> goalPoints = new ArrayList<>();
