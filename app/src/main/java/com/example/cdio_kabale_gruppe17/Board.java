@@ -80,40 +80,51 @@ public class Board {
         List<Integer> numberOfAverages = new ArrayList<>();
         // calculate how many columns there are on the board
         for (int i = 0; i < columnList.size(); i++) {
+            isNew = true;
             System.out.println(cardInfo.get(i));
             boolean isInMargin = false;
             // få kort fra ML af
-            Card currentCard = new Card(getColor(cardInfo.get(i)), getNumber(cardInfo.get(i)),getType(cardInfo.get(i)), 0, i, CardDetector.yCoords.get(i), CardDetector.xCoords.get(i));
+            Card currentCard = new Card(getColor(cardInfo.get(i)), getNumber(cardInfo.get(i)), getType(cardInfo.get(i)), 0, i, CardDetector.yCoords.get(i), CardDetector.xCoords.get(i));
 
             if (isInstanciated) {
-                for (int j = 0; j < board.size(); j++) {
-                    if (board.get(j).contains(currentCard)) {
-                        isNew = false;
-                        for (int k = 0; k < board.get(j).size(); k++) {
-                            if(currentCard.getOwnNumber() == board.get(j).get(k).getOwnNumber() && currentCard.getOwnType() == board.get(j).get(k).getOwnType()){
-                                board.get(j).set(k, currentCard);
-                            }
+                for (int j = 0; j < goalPoints.size(); j++) {
+                    for (int k = 0; k < goalPoints.get(j).size(); k++) {
+                        if (currentCard.getOwnNumber() == goalPoints.get(j).get(k).getOwnNumber() && currentCard.getOwnType() == goalPoints.get(j).get(k).getOwnType()) {
+                            isNew = false;
+                            goalPoints.get(j).get(k).setxCoord(currentCard.getxCoord());
+                            goalPoints.get(j).get(k).setyCoord(currentCard.getyCoord());
+                            goalPoints.get(j).get(k).setPicPos(currentCard.getPicPos());
                         }
                     }
                 }
-                if(isNew){
+                for (int j = 0; j < board.size(); j++) {
+                    for (int k = 0; k < board.get(j).size(); k++) {
+                        if (currentCard.getOwnNumber() == board.get(j).get(k).getOwnNumber() && currentCard.getOwnType() == board.get(j).get(k).getOwnType()) {
+                            isNew = false;
+                            board.get(j).get(k).setxCoord(currentCard.getxCoord());
+                            board.get(j).get(k).setyCoord(currentCard.getyCoord());
+                            board.get(j).get(k).setPicPos(currentCard.getPicPos());
+                        }
+                    }
+                }
+                if (isNew) {
                     for (int j = 0; j < board.size(); j++) {
                         if (board.get(j).get(0).getOwnNumber() == Card.cardNumber.EMPTY) {
-                            board.get(j).set(0,currentCard);
+                            board.get(j).set(0, currentCard);
                         }
                     }
                 }
             } else {
-            // if there is no other averages in the list add this one
-            if (averages.isEmpty()){
-                averages.add(columnList.get(i));
-                numberOfAverages.add(1);
-                currentCard.setColumn(averages.size()-1);
-                board.get(averages.size()-1).add(currentCard);
-            }
-            // else we check if this point is in the margin of the average
-            else {
-                for (int j = 0; j < averages.size(); j++) {
+                // if there is no other averages in the list add this one
+                if (averages.isEmpty()) {
+                    averages.add(columnList.get(i));
+                    numberOfAverages.add(1);
+                    currentCard.setColumn(averages.size() - 1);
+                    board.get(averages.size() - 1).add(currentCard);
+                }
+                // else we check if this point is in the margin of the average
+                else {
+                    for (int j = 0; j < averages.size(); j++) {
                         // if it is in the margin add it to that list and calculate average
                         if (averages.get(j) + margin > columnList.get(i) && averages.get(j) - margin < columnList.get(i)) {
                             numberOfAverages.set(j, numberOfAverages.get(j) + 1);
@@ -168,10 +179,12 @@ public class Board {
 
 
         // create empty lists for the rest
-        for (int i = averages.size(); i < 7; i++) {
-            List<Card> temp = new ArrayList<>();
-            temp.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, i, 0));
-            board.set(i, temp);
+        if (!isInstanciated) {
+            for (int i = averages.size(); i < 7; i++) {
+                List<Card> temp = new ArrayList<>();
+                temp.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, i, 0));
+                board.set(i, temp);
+            }
         }
         isInstanciated = true;
     }
