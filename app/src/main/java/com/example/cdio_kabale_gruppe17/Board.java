@@ -8,7 +8,6 @@ import java.util.List;
 
 public class Board {
 
-    // TODO lav en liste der indeholder kort som ikke skal køres getmove på
     private static Board instance = null;
     private static List<List<Card>> board = new ArrayList<>();
     private static List<List<Card>> goalPoints = new ArrayList<>();
@@ -28,7 +27,6 @@ public class Board {
 
 
     // instantiate the board with some lists based on the columns
-    // TODO fix så den sorterer board efter x koordinater
     public void instantiate(ArrayList<String> cardInfo){
         // set the margin that the distance between cards in same column can be
         float margin = 0.5f;
@@ -76,15 +74,12 @@ public class Board {
             System.out.println(cardInfo.get(i));
             boolean isInMargin = false;
             // få kort fra ML af
-            // TODO lav om til machine learning i stedet for predefined
-
             Card currentCard = new Card(getColor(cardInfo.get(i)), getNumber(cardInfo.get(i)),getType(cardInfo.get(i)), 0, i, CardDetector.yCoords.get(i), CardDetector.xCoords.get(i));
 
             // if there is no other averages in the list add this one
             if (averages.isEmpty()){
                 averages.add(columnList.get(i));
                 numberOfAverages.add(1);
-                board.get(averages.size()-1).add(currentCard);
                 currentCard.setColumn(averages.size()-1);
                 board.get(averages.size()-1).add(currentCard);
             }
@@ -103,9 +98,9 @@ public class Board {
                         board.get(j).sort(new Comparator<Card>() {
                             @Override
                             public int compare(Card o1, Card o2) {
-                                if (o1.getyCoord() > o2.getyCoord()) return -1;
+                                if (o1.getyCoord() > o2.getyCoord()) return 1;
                                 else if (o1.getyCoord() == o2.getyCoord()) return 0;
-                                else return 1;
+                                else return -1;
                             }
                         });
                         break;
@@ -118,7 +113,6 @@ public class Board {
                         numberOfAverages.add(1);
                         currentCard.setColumn(averages.size() - 1);
                         board.get(averages.size() - 1).add(currentCard);
-                        currentCard.setColumn(averages.size() - 1);
                     }
                 }
             }
@@ -169,10 +163,8 @@ public class Board {
     }
 
     private Card.cardNumber getNumber(String card) {
-        String c = String.valueOf(card.charAt(1));
+        String c = card.substring(1);
         switch (c){
-            case "1":
-                return  Card.cardNumber.ONE;
             case "2":
                 return  Card.cardNumber.TWO;
             case "3":
@@ -230,9 +222,10 @@ public class Board {
         // if the card is on the board
         if (target.getOwnNumber() != Card.cardNumber.HAND) {
             List<Card> tempList = new ArrayList<>();
+            int originCol = origin.get(origin.size()-1).getColumn();
             // first iterate from the bottom of the column until we find the target card
             // meanwhile we save all cards that are beneath the target so we can move it together with the target
-            for (int i = 0; i < origin.size(); i++) {
+            for (int i = origin.size()-1; i > 0; i--) {
                 tempList.add(origin.get(i));
                 origin.remove(origin.get(i));
                 if (tempList.get(tempList.size() - 1) == target) {
@@ -251,7 +244,7 @@ public class Board {
                 end.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, endCol, 0));
             }
             if (origin.isEmpty()) {
-                origin.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, endCol, 0));
+                origin.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, originCol, 0));
             }
         }
         // check if it is in the hand but not find new cards

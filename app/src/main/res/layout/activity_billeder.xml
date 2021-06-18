@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="0"
         android:gravity="center"
-        android:text="Keep the downscale size as small as possible and remove inconsistencies"
+        android:text="Keep the downscale size as small as possible and remove inconsistencies. If the ML guessed the card incorrectly you can change it in the dropdown menu."
         android:textColor="@color/black"
         android:textSize="20sp" />
 

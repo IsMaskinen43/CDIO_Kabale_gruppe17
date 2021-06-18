@@ -65,11 +65,11 @@ public class ShowBoard extends AppCompatActivity implements View.OnClickListener
                     currentView = goalPoint1;
                     break;
             }
-            if (goal.get(i).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(goal.get(i).get(0).getxCoord(), goal.get(i).get(0).getyCoord()))) {
+            if (goal.get(i).get(goal.get(i).size()-1).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(goal.get(i).get(goal.get(i).size()-1).getxCoord(), goal.get(i).get(goal.get(i).size()-1).getyCoord()))) {
                 currentView.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
 
             } else{
-                currentView.setImageBitmap(pics.get(goal.get(i).get(0).getPicPos()+1));
+                currentView.setImageBitmap(pics.get(goal.get(i).get(goal.get(i).size()-1).getPicPos()+1));
             }
         }
 
@@ -101,10 +101,10 @@ public class ShowBoard extends AppCompatActivity implements View.OnClickListener
                     break;
             }
 
-            if (board.get(i).get(0).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(board.get(i).get(0).getxCoord(), board.get(i).get(0).getyCoord()))){
+            if (board.get(i).get(board.get(i).size()-1).getOwnNumber() == Card.cardNumber.EMPTY || bannedPositions.contains(new Pair<>(board.get(i).get(board.get(i).size()-1).getxCoord(), board.get(i).get(board.get(i).size()-1).getyCoord()))){
                 currentView.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.outline));
             } else{
-                currentView.setImageBitmap(pics.get(board.get(i).get(0).getPicPos()+1));
+                currentView.setImageBitmap(pics.get(board.get(i).get(board.get(i).size()-1).getPicPos()+1));
             }
         }
 

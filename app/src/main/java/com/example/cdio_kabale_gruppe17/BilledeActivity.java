@@ -124,21 +124,6 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
         }
 
 
-
-
-        /*
-        // print all moves
-        List<Pair<Card,List<Pair<Integer,Integer>>>> moves = currBoard.getAllMoves();
-        for (Pair<Card,List<Pair<Integer,Integer>>> l: moves) {
-            for (int i = 0; i < l.second.size(); i++) {
-                System.out.println("Possible move for " + l.first.toString() +" is in column " + l.second.get(i).first + " and row " + l.second.get(i).second);
-            }
-        }
-
-        List<Pair<Integer,Pair<Card,Integer>>> bestMoves = Algoritme.getInstance().getBestMoves(currBoard);
-        for (Pair<Integer, Pair<Card, Integer>> p: bestMoves) {
-            System.out.println("Best move is moving " + p.second.first + " to column " + p.second.second + " with a score of " + p.first);
-        }*/
     }
 
     public void removeBitmap(int position){
@@ -191,16 +176,6 @@ public class BilledeActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         if (v == continueButton) {
-
-            tensorController tc = new tensorController(this);
-
-            /*
-            for (int i = 1; i < bitmapListSliced.size(); i++) {
-                System.out.println(CardDetector.xCoords.get(i-1));
-                cardInfo.add(tc.runmodel(bitmapListSliced.get(i)));
-
-            }*/
-
             ArrayList<String> cardInfo = new ArrayList<>(cardInfoGlobal);
 
             currBoard.instantiate(cardInfo);

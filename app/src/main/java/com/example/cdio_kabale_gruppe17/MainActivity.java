@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d(TAG, "Unable to load OpenCV");
         else {
             Log.d(TAG, "OpesnCV loaded");
-            Log.d(TAG, "OpesnCV loaded");
         }
     }
 
@@ -67,12 +66,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fromGallery.setOnClickListener(this);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        tensorController tc = new tensorController(this);
-        /*Log.d(TAG,"output: " +tc.runmodel(BitmapFactory.decodeResource(this.getResources(), R.drawable.r3)));
-        Log.d(TAG,"output: " +tc.runmodel(BitmapFactory.decodeResource(this.getResources(), R.drawable.s72)));
-        Log.d(TAG,"output: " +tc.runmodel(BitmapFactory.decodeResource(this.getResources(), R.drawable.s6)));
-        */
     }
 
 

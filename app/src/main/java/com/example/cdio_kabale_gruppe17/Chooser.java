@@ -26,21 +26,29 @@ public class Chooser extends AppCompatActivity {
 
         List<String> texts = new ArrayList<>();
         List<Integer> picPos = new ArrayList<>();
+        List<Integer> otherPicPos = new ArrayList<>();
         for (Pair<Integer, Pair<Card, Integer>> p: moves) {
             if (p.second.first.getOwnNumber() == Card.cardNumber.HAND){
                 texts.add("Get some new cards by flipping the hand stack");
+                otherPicPos.add(0);
             }
             else if (p.second.second < 7) {
-                texts.add("Move " + p.second.first.getOwnNumber() + " of " + p.second.first.getOwnType() + " from column " + (7 - p.second.first.getColumn()) + " to column " + (7 - p.second.second) + " with a score of " + p.first);
+                Card otherCard = Board.getInstance().getBoard().get(p.second.second).get(Board.getInstance().getBoard().get(p.second.second).size()-1);
+                if (otherCard.getOwnNumber() != Card.cardNumber.EMPTY) {
+                    texts.add("Move " + p.second.first.getOwnNumber() + " of " + p.second.first.getOwnType() + " from column " + (7 - p.second.first.getColumn()) + " to " + otherCard.getOwnNumber() + " of " + otherCard.getOwnType() + " at column " + (7 - p.second.second) + " with a score of " + p.first);
+                } else texts.add("Move " + p.second.first.getOwnNumber() + " of " + p.second.first.getOwnType() + " from column " + (7 - p.second.first.getColumn()) + " to column " + (7 - p.second.second) + " with a score of " + p.first);
+                otherPicPos.add(otherCard.getPicPos());
             } else {
-                texts.add("Move " + p.second.first.getOwnNumber() + " of " + p.second.first.getOwnType() + " from column " + (7 - p.second.first.getColumn()) + " to goal point " + (11 - p.second.second) + " with a score of " + p.first);
+                texts.add("Move " + p.second.first.getOwnNumber() + " of " + p.second.first.getOwnType() + " from column " + (7 - p.second.first.getColumn()) + " to goal point " + Math.abs(11 - p.second.second-4) + " with a score of " + p.first);
+                otherPicPos.add(Board.getInstance().getGoalPoints().get(Math.abs(11 - p.second.second-4)).get(Board.getInstance().getGoalPoints().get(Math.abs(11 - p.second.second-4)).size()-1).getPicPos());
             }
 
             picPos.add(p.second.first.getPicPos());
 
+
         }
 
-        ChooseAdapter adapter = new ChooseAdapter(this, texts, PictureHelperClass.getInstance().getPictureList(), picPos);
+        ChooseAdapter adapter = new ChooseAdapter(this, texts, PictureHelperClass.getInstance().getPictureList(), picPos, otherPicPos);
         view.setAdapter(adapter);
 
         view.setOnItemClickListener(new AdapterView.OnItemClickListener() {

@@ -7,7 +7,7 @@
     -->
     <string name="hello_world">Hello Square World!</string>
     <string-array name="createDropDown">
-        <item>--Vælg kort--</item>
+        <item>--Choose card--</item>
         <item>H2</item>
         <item>H3</item>
         <item>H4</item>
