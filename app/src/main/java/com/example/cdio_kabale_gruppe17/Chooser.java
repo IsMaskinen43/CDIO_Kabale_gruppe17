@@ -16,10 +16,12 @@ import java.util.List;
 
 public class Chooser extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chooser);
+
         ListView view = findViewById(R.id.chooser_listview);
 
         List<Pair<Integer, Pair<Card, Integer>>> moves = Algoritme.getInstance().getBestMoves(Board.getInstance());

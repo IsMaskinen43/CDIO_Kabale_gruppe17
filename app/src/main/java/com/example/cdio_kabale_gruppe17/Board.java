@@ -1,5 +1,6 @@
 package com.example.cdio_kabale_gruppe17;
 
+import android.preference.PreferenceManager;
 import android.util.Pair;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +15,8 @@ public class Board {
     private static List<List<Card>> goalPoints = new ArrayList<>();
     private static List<Card> hand = new ArrayList<>();
     private static List<Pair<Integer,Integer>> bannedCards = new ArrayList<>();
+    static boolean isInstanciated = false;
+    boolean isNew = true;
 
 
     private Board(){
@@ -32,24 +35,29 @@ public class Board {
         // set the margin that the distance between cards in same column can be
         float margin = 0.5f;
 
-        // instantiate the seven columns
-        board.clear();
-        goalPoints.clear();
-        hand.clear();
-        bannedCards.clear();
-        for (int i = 0; i < 7; i++) {
-            board.add(new ArrayList<>());
+
+        if(!isInstanciated) {
+            //instantiate the seven columns
+            board.clear();
+            goalPoints.clear();
+            hand.clear();
+            bannedCards.clear();
+            for (int i = 0; i < 7; i++) {
+                board.add(new ArrayList<>());
+            }
+
+            // instantiate the four goal points
+            for (int i = 0; i < 4; i++) {
+                goalPoints.add(new ArrayList<>());
+                goalPoints.get(i).add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, 7 + i, 0));
+            }
+
+            for (int i = 0; i < 3; i++) {
+                hand.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, i, 0));
+            }
         }
 
-        // instantiate the four goal points
-        for (int i = 0; i < 4; i++) {
-            goalPoints.add(new ArrayList<>());
-            goalPoints.get(i).add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, 7+i, 0));
-        }
 
-        for (int i = 0; i < 3; i++) {
-            hand.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, i, 0));
-        }
 
         // find the max and min points in the x axis
         int maxX=Integer.MIN_VALUE, minX=Integer.MAX_VALUE;
@@ -77,6 +85,25 @@ public class Board {
             // få kort fra ML af
             Card currentCard = new Card(getColor(cardInfo.get(i)), getNumber(cardInfo.get(i)),getType(cardInfo.get(i)), 0, i, CardDetector.yCoords.get(i), CardDetector.xCoords.get(i));
 
+            if (isInstanciated) {
+                for (int j = 0; j < board.size(); j++) {
+                    if (board.get(j).contains(currentCard)) {
+                        isNew = false;
+                        for (int k = 0; k < board.get(j).size(); k++) {
+                            if(currentCard.getOwnNumber() == board.get(j).get(k).getOwnNumber() && currentCard.getOwnType() == board.get(j).get(k).getOwnType()){
+                                board.get(j).set(k, currentCard);
+                            }
+                        }
+                    }
+                }
+                if(isNew){
+                    for (int j = 0; j < board.size(); j++) {
+                        if (board.get(j).get(0).getOwnNumber() == Card.cardNumber.EMPTY) {
+                            board.get(j).set(0,currentCard);
+                        }
+                    }
+                }
+            } else {
             // if there is no other averages in the list add this one
             if (averages.isEmpty()){
                 averages.add(columnList.get(i));
@@ -85,35 +112,36 @@ public class Board {
                 board.get(averages.size()-1).add(currentCard);
             }
             // else we check if this point is in the margin of the average
-            else{
+            else {
                 for (int j = 0; j < averages.size(); j++) {
-                    // if it is in the margin add it to that list and calculate average
-                    if (averages.get(j)+margin > columnList.get(i) && averages.get(j)-margin < columnList.get(i)){
-                        numberOfAverages.set(j, numberOfAverages.get(j)+1);
-                        averages.set(j, (averages.get(j)+columnList.get(i))/(numberOfAverages.get(j)));
-                        isInMargin = true;
-                        currentCard.setColumn(j);
-                        // we add the current card to the column
-                        board.get(j).add(currentCard);
-                        // sort the list based on the y coordinate
-                        board.get(j).sort(new Comparator<Card>() {
-                            @Override
-                            public int compare(Card o1, Card o2) {
-                                if (o1.getyCoord() > o2.getyCoord()) return 1;
-                                else if (o1.getyCoord() == o2.getyCoord()) return 0;
-                                else return -1;
-                            }
-                        });
-                        break;
+                        // if it is in the margin add it to that list and calculate average
+                        if (averages.get(j) + margin > columnList.get(i) && averages.get(j) - margin < columnList.get(i)) {
+                            numberOfAverages.set(j, numberOfAverages.get(j) + 1);
+                            averages.set(j, (averages.get(j) + columnList.get(i)) / (numberOfAverages.get(j)));
+                            isInMargin = true;
+                            currentCard.setColumn(j);
+                            // we add the current card to the column
+                            board.get(j).add(currentCard);
+                            // sort the list based on the y coordinate
+                            board.get(j).sort(new Comparator<Card>() {
+                                @Override
+                                public int compare(Card o1, Card o2) {
+                                    if (o1.getyCoord() > o2.getyCoord()) return 1;
+                                    else if (o1.getyCoord() == o2.getyCoord()) return 0;
+                                    else return -1;
+                                }
+                            });
+                            break;
+                        }
                     }
-                }
-                if (!isInMargin) {
-                    // if not in average margin we add a new average
-                    if (averages.size() != 7) {
-                        averages.add(columnList.get(i));
-                        numberOfAverages.add(1);
-                        currentCard.setColumn(averages.size() - 1);
-                        board.get(averages.size() - 1).add(currentCard);
+                    if (!isInMargin) {
+                        // if not in average margin we add a new average
+                        if (averages.size() != 7) {
+                            averages.add(columnList.get(i));
+                            numberOfAverages.add(1);
+                            currentCard.setColumn(averages.size() - 1);
+                            board.get(averages.size() - 1).add(currentCard);
+                        }
                     }
                 }
             }
@@ -145,6 +173,7 @@ public class Board {
             temp.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, i, 0));
             board.set(i, temp);
         }
+        isInstanciated = true;
     }
 
     private Card.cardType getType(String card) {
@@ -226,7 +255,7 @@ public class Board {
             int originCol = origin.get(origin.size()-1).getColumn();
             // first iterate from the bottom of the column until we find the target card
             // meanwhile we save all cards that are beneath the target so we can move it together with the target
-            for (int i = origin.size()-1; i > 0; i--) {
+            for (int i = origin.size()-1; i >= 0; i--) {
                 tempList.add(origin.get(i));
                 origin.remove(origin.get(i));
                 if (tempList.get(tempList.size() - 1) == target) {
