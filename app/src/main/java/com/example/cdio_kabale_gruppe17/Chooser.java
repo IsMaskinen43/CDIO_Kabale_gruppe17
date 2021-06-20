@@ -56,6 +56,8 @@ public class Chooser extends AppCompatActivity {
         view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // set bool according to if we got new cards from hand or not
+                Board.getInstance().setTurnedHand(moves.get(position).second.first.getOwnNumber() == Card.cardNumber.HAND);
                 if (moves.get(position).second.second < 7) {
                     Board.getInstance().moveCard(moves.get(position).second.first, Board.getInstance().getBoard().get(moves.get(position).second.first.getColumn()), Board.getInstance().getBoard().get(moves.get(position).second.second));
 

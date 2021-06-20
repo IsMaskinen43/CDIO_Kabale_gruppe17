@@ -16,8 +16,8 @@ public class Board {
     private static List<Card> hand = new ArrayList<>();
     private static List<Pair<Integer,Integer>> bannedCards = new ArrayList<>();
     static boolean isInstanciated = false;
-    boolean isNew = true;
-
+    private boolean isNew = true;
+    private boolean turnedHand = false;
 
     private Board(){
     }
@@ -78,6 +78,8 @@ public class Board {
         // set up the board based on the average x coord and margin
         List<Float> averages = new ArrayList<>();
         List<Integer> numberOfAverages = new ArrayList<>();
+
+        int amountOfHands = 0;
         // calculate how many columns there are on the board
         for (int i = 0; i < columnList.size(); i++) {
             isNew = true;
@@ -108,9 +110,16 @@ public class Board {
                     }
                 }
                 if (isNew) {
-                    for (int j = 0; j < board.size(); j++) {
-                        if (board.get(j).get(0).getOwnNumber() == Card.cardNumber.EMPTY) {
-                            board.get(j).set(0, currentCard);
+                    if (turnedHand){
+                        // add a card to the hand
+                        hand.set(amountOfHands, currentCard);
+                        amountOfHands++;
+                    } else {
+                        // add a card to the board
+                        for (int j = 0; j < board.size(); j++) {
+                            if (board.get(j).get(0).getOwnNumber() == Card.cardNumber.EMPTY) {
+                                board.get(j).set(0, currentCard);
+                            }
                         }
                     }
                 }
@@ -453,6 +462,10 @@ public class Board {
                 }
             }
         }
+    }
+
+    public void setTurnedHand(boolean truth){
+        this.turnedHand = truth;
     }
 
 }
