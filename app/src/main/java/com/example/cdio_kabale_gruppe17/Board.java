@@ -55,6 +55,13 @@ public class Board {
             for (int i = 0; i < 3; i++) {
                 hand.add(new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, i, 0));
             }
+        } else {
+            // if we drew new cards replace all old with empty cards (just incase we dont find 3 cards with opencv)
+            if (turnedHand){
+                for (int i = 0; i < 3; i++) {
+                    hand.set(i,new Card(Card.cardColor.EMPTY, Card.cardNumber.EMPTY, Card.cardType.EMPTY, i, 0));
+                }
+            }
         }
 
 
